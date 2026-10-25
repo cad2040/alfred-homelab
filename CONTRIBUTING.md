@@ -23,4 +23,6 @@ Thanks for caring about local-LLM homelab rails.
 
 ## Tone
 
-Honest about weaknesses (small weights, operator tax). No “replaces ChatGPT” claims.
+Honest about weaknesses (small weights, operator tax). No “replaces ChatGPT” claims. No community rankings (“top N%”) — describe tradeoffs, don’t score other labs.
+
+When documenting a pattern whose CLI/cron lives privately, say so in the first paragraph of the guide.

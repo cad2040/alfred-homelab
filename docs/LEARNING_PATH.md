@@ -46,18 +46,19 @@ Read [architecture.md](architecture.md). Accept: small local models need **polic
 
 ## 6. Model challenge → wire → drop (week 2–3)
 
-1. Read [guides/model-challenge-wire-drop.md](guides/model-challenge-wire-drop.md).
-2. Never rewire on a tied score or a smaller ctx without eyes open.
+1. Read [guides/model-challenge-wire-drop.md](guides/model-challenge-wire-drop.md) — **pattern**; CLIs are private.
+2. Practice with the keyword harness against two LiteLLM model entries, or wait until you write your own wire script.
+3. Never rewire on a tied score or a smaller ctx without eyes open.
 
-**Done when:** you can A/B a tag and roll back safely.
+**Done when:** you can explain pull → A/B → wire-with-rollback → drop, even if you edit YAML by hand.
 
 ## 7. Eval harness (week 3+)
 
-1. Read [guides/eval-harness.md](guides/eval-harness.md).
+1. Read [guides/eval-harness.md](guides/eval-harness.md) — this repo’s harness is a **keyword toy**.
 2. Run the minimal examples under [`examples/harness/`](../examples/harness/).
 3. Grow your own challenges from real failures (that is the whole point).
 
-**Done when:** at least one batch gates a skill you care about (e.g. safe-script).
+**Done when:** at least one gate encodes a scar you care about (e.g. DOCKER-USER / CONFIRM).
 
 ## 8. Nightly Sentinel (week 4+)
 
@@ -69,12 +70,12 @@ Read [architecture.md](architecture.md). Accept: small local models need **polic
 
 ## 9. Memory tiers & Chroma prune (week 4+)
 
-1. Read [guides/memory-tiers-curation.md](guides/memory-tiers-curation.md).
+1. Read [guides/memory-tiers-curation.md](guides/memory-tiers-curation.md) — **gates only** in this repo; the nightly prune job is private.
 2. Score notes with [`examples/curation/RUBRIC_CHECKLIST.md`](../examples/curation/RUBRIC_CHECKLIST.md); run [`route_score.py`](../examples/curation/route_score.py).
-3. Wire: Bronze capture → nightly purge/silver → **HITL only** for Gold git skills.
-4. Confirm Bronze collection size **sawtooths** (grows by day, shrinks after nightly), not climbs forever.
+3. In your private lab: Bronze capture → nightly purge/silver → **HITL only** for Gold git skills.
+4. Success metric once prune exists: Bronze collection size **sawtooths** (grows by day, shrinks after nightly), not climbs forever.
 
-**Done when:** low-quality Bronze is deleted automatically and Gold never appears without a human merge.
+**Done when:** you can explain purge vs silver vs gold_stage, and you refuse auto-Gold without a human merge.
 
 ## 10. What stays private
 

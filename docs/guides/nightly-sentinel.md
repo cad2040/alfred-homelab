@@ -32,6 +32,8 @@ Hard rules from real ops:
 
 ## Skeleton in this repo
 
+**Scope:** a digest writer with flock + LiteLLM chat. No telemetry collectors, mail, backups, or memory prune — those are private stages you add later.
+
 [`examples/sentinel/sentinel_skeleton.py`](../../examples/sentinel/sentinel_skeleton.py) demonstrates:
 
 - env-based config (no hardcoded estate paths)

@@ -41,7 +41,8 @@ services:
       ALFRED_DOMAINS_YAML: /app/config/domains.yaml
       ALFRED_BRONZE_BUDGETS: /app/config/bronze_budgets.yaml
       ALFRED_LITELLM_CONFIG: /app/config/config.yaml
-      # Optional Bronze→Chroma ingest:
+      # Optional: disable persona with ALFRED_PERSONA: ""
+      # Optional Bronze→Chroma ingest (capture only; no prune):
       # CHROMA_URL: http://chroma:8000/api/v2/tenants/default_tenant/databases/default_database
     volumes:
       - ./litellm:/app/config:ro

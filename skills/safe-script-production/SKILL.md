@@ -10,19 +10,6 @@ routing_tags:
   - "#domain:safe-script-production"
   - "#domain:coding"
 preferred_model: alfred-coder
-applicability:
-  buckets: [coding]
-  apply_when:
-    - "bash script"
-    - "shell script"
-    - "write a script"
-    - "dry-run"
-    - "set -euo"
-    - "rm -rf"
-    - "rsync"
-    - "destructive"
-  exclude_when: []
-  min_hits: 2
 ---
 
 # Safe script production (host / repo mutations)

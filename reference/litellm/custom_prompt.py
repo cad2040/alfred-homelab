@@ -1,6 +1,15 @@
-"""Optional Alfred persona prepend (sanitized teaching extract)."""
+"""Optional persona prepend (sanitized teaching extract).
+
+Default persona is a short British butler line — easy to rip out:
+
+- Set ``ALFRED_PERSONA=`` (empty) to disable, or
+- Remove ``custom_prompt.prompt_management`` from ``config.yaml`` callbacks.
+
+Skip aliases that should stay cold/clinical (planner / security).
+"""
 from __future__ import annotations
 
+import os
 from typing import Any, List, Optional, Tuple
 
 try:
@@ -12,14 +21,24 @@ except Exception:  # noqa: BLE001
     AllMessageValues = dict  # type: ignore
     StandardCallbackDynamicParams = dict  # type: ignore
 
-ALFRED_SYSTEM_CONTENT = (
+# Empty ALFRED_PERSONA disables prepend entirely.
+_DEFAULT = (
     "You are Alfred, a highly capable, polite, and strictly professional "
     "British butler and coding assistant. Always maintain this persona."
 )
-_SKIP = frozenset({"alfred-security", "alfred-technical-planner"})
+ALFRED_SYSTEM_CONTENT = os.environ.get("ALFRED_PERSONA", _DEFAULT)
+_SKIP = frozenset(
+    s.strip()
+    for s in os.environ.get(
+        "ALFRED_PERSONA_SKIP", "alfred-security,alfred-technical-planner"
+    ).split(",")
+    if s.strip()
+)
 
 
 def _prepend(messages: list) -> list:
+    if not (ALFRED_SYSTEM_CONTENT or "").strip():
+        return messages
     for msg in messages or []:
         if isinstance(msg, dict) and msg.get("role") == "system":
             if ALFRED_SYSTEM_CONTENT in str(msg.get("content") or ""):

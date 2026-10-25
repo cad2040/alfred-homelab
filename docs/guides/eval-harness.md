@@ -1,6 +1,8 @@
 # Automated eval harness
 
-The harness is how Alfred stays honest: **fixed prompts → call an alias → gate the answer** (and optionally ask a cloud Flash model to comment). Green matrix ≠ unsupervised agent. HITL required to change prod.
+The harness is how a rails-heavy lab stays honest: **fixed prompts → call an alias → gate the answer** (and optionally ask a cloud Flash model to comment). Green matrix ≠ unsupervised agent. HITL required to change prod.
+
+**Scope of this repo:** a **toy** keyword harness under [`examples/harness/`](../../examples/harness/). Full matrices, trust-band reports, and Gemini/Flash judges are private-lab work — this extract shows the shape so you can grow your own.
 
 ## Why bother
 
@@ -19,11 +21,11 @@ A short, boring matrix catches that before Monday’s chat feels “off.”
 challenges/*.md          # user prompts (and expected behaviours in comments/docs)
 run_challenge.py         # POST /v1/chat/completions → response.md + meta.json
 eval_*.py / inline gates # PASS/FAIL JSON
-run_*_batch.sh           # orchestrate a pack
-optional judge           # Gemini Flash advisory over the matrix summary
+run_*_batch.sh           # orchestrate a pack (private)
+optional judge           # Gemini Flash advisory (private)
 ```
 
-## Packs (typical private lab)
+## Packs (typical private lab — not shipped here)
 
 | Pack | Intent |
 |------|--------|
@@ -37,7 +39,7 @@ You do **not** need all packs on day one. Start with **one gate that encodes a s
 
 ## Minimal example in this repo
 
-See [`examples/harness/`](../../examples/harness/):
+Keyword-only — deliberately boring:
 
 ```bash
 export LITELLM_BASE=http://127.0.0.1:4000
@@ -50,14 +52,14 @@ python3 run_challenge.py \
 python3 eval_keywords.py --response runs/01_demo/response.md --need docker-user,ufw
 ```
 
-## Weekly loop (pattern)
+## Weekly loop (pattern for a private lab)
 
 1. **Sunday / off-peak:** run matrix (skip dense if VRAM-tight).
 2. **Judge (optional):** Flash model scores batches; suggestions are drafts only.
 3. **Monday:** human reads HTML/markdown report; apply skill fixes by hand.
 4. **Never** auto-promote Gold or auto-wire models from a judge score.
 
-Env for a judge (private `.env` only):
+Env for a judge (private `.env` only — never commit):
 
 ```bash
 GEMINI_API_KEY=...          # or GOOGLE_API_KEY
@@ -66,7 +68,7 @@ GEMINI_MODEL=gemini-2.0-flash  # pick a current Flash; advisory only
 
 ## Writing a good challenge
 
-1. Reproduce a **real** failure (invented `/mnt/media`, missing `DOCKER-USER`, etc.).
+1. Reproduce a **real** failure (invented mount paths, missing `DOCKER-USER`, etc.).
 2. Gate on **observable** strings/structure — not vibes.
 3. Keep prompts short enough for your `num_ctx`.
 4. Disable tools for coding evals if tools divert into note-taking.

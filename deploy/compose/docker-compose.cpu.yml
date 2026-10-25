@@ -1,4 +1,6 @@
 # Override: drop NVIDIA device reservation for CPU-only hosts.
+# If your Docker Engine still errors on nvidia devices after this file,
+# delete the entire `ollama.deploy` block from docker-compose.yml instead.
 services:
   ollama:
     deploy:

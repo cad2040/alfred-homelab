@@ -14,7 +14,7 @@ preferred_model: alfred-coder
 
 ## Hard rules
 
-1. Keep the **full** path the human or tools gave you. Never “simplify” `/mnt/DATA/media` → `/mnt/media`.
+1. Keep the **full** path the human or tools gave you. Never “simplify” `/mnt/storage/media` → `/mnt/media`.
 2. Prefer **one** depth-limited directory size listing, then answer. Do not spam recursive listings.
 3. Structure the reply from evidence sections when available:
    - largest dirs (capacity)

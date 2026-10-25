@@ -1,4 +1,6 @@
-# Minimal eval harness examples
+# Minimal eval harness examples (keyword toy)
+
+Not a full weekly matrix — just enough to prove “fixed prompt → gate response.”
 
 ```bash
 export LITELLM_BASE=http://127.0.0.1:4000
@@ -25,5 +27,5 @@ python3 eval_keywords.py \
   --forbid 'ln -s'
 ```
 
-Grow from here: add route.json dumps, Spec Kit domain gates, weekly Flash judge.
+Grow privately: route dumps, Spec Kit domain gates, weekly Flash judge.
 See [docs/guides/eval-harness.md](../../docs/guides/eval-harness.md).

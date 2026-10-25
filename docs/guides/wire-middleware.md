@@ -60,12 +60,16 @@ LiteLLM runs callbacks in list order. Recommended:
 | `ALFRED_MAX_SKILL_CHARS` | `4500` | Inject budget for SKILL.md bodies |
 | `ALFRED_BRONZE_CTX_RATIO` | `0.61` | threshold ≈ ratio × num_ctx |
 | `ALFRED_FIM_TAG` | `qwen2.5-coder:1.5b-base` | `/api/generate` summarizer |
-| `CHROMA_URL` | empty | If set, best-effort Bronze upsert |
+| `CHROMA_URL` | empty | If set, best-effort Bronze upsert (no prune) |
 | `OLLAMA_HOST` | `http://ollama:11434` | Direct Ollama (no LiteLLM re-entry) |
+| `ALFRED_PERSONA` | butler line | Empty string disables persona prepend |
+| `ALFRED_PERSONA_SKIP` | planner,security | Alias substrings that skip persona |
 
 ## Hardening notes
 
 - Never commit real master keys.
 - Callbacks call Ollama **directly** for summarize/embed — avoid re-entering LiteLLM hooks.
 - If FIM tag is missing, Bronze falls back to extractive stubs (still protects num_ctx).
+- Optional Chroma upsert is **capture only** — purge/Silver/Gold staging is a separate private job ([memory-tiers-curation.md](memory-tiers-curation.md)).
+- Re-smoke after LiteLLM image bumps; `CustomLogger` / prompt-management registration has drifted across versions.
 - Private labs often add: websearch inject, applicability scoring, deny-tool lists, twin `*-fc` aliases — port those carefully; don’t paste estate secrets into a public fork.

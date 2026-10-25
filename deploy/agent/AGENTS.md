@@ -39,5 +39,7 @@ You are helping a human stand up or adapt an **Alfred-like** local LLM stack fro
 ## Success criteria
 
 - Compose healthy; Ollama has the chat tag; LiteLLM answers on `127.0.0.1:4000`
+- `#domain:docker-ufw` smoke mentions DOCKER-USER (skill inject works)
 - Human understands aliases + that small local models need skills/rails
+- Human understands this repo is a **teaching subset** (no challenge CLIs / prune cron)
 - No secrets written into the git tree

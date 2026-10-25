@@ -277,12 +277,26 @@ async def _ingest_bronze_optional(summary: str) -> None:
                 coll_id = (created.json() or {}).get("id")
             if not coll_id:
                 return
+            # Chroma rejects nulls — use "" / False / 0. Teaching metadata only;
+            # private labs often add dual keys (collection_tier) + richer fields.
+            meta = {
+                "tier": "bronze",
+                "collection_tier": "bronze",
+                "note_kind": "rolling-summary",
+                "repo_tag": "",
+                "created_at": ts,
+                "last_accessed_at": ts,
+                "is_pinned": False,
+                "promotion_score": 0,
+                "superseded_by": "",
+                "review_status": "",
+            }
             await client.post(
                 f"{CHROMA}/collections/{coll_id}/upsert",
                 json={
                     "ids": [doc_id],
                     "documents": [f"Bronze Context Summary ({ts}):\n{summary}"],
-                    "metadatas": [{"tier": "bronze", "note_kind": "rolling-summary"}],
+                    "metadatas": [meta],
                     "embeddings": [vec],
                 },
                 timeout=120.0,
@@ -354,13 +368,9 @@ class AlfredBronzeMiddleware(CustomLogger):
                 )
             data["messages"] = new_msgs
             if summary:
-                # fire-and-forget style: schedule would need running loop; sync best-effort
-                try:
-                    import asyncio
-
-                    asyncio.create_task(_ingest_bronze_optional(summary))
-                except Exception:  # noqa: BLE001
-                    pass
+                # Await so the task is not dropped when the hook returns.
+                # Failures are swallowed inside _ingest_bronze_optional.
+                await _ingest_bronze_optional(summary)
         except Exception as exc:  # noqa: BLE001
             log.warning("bronze compress unexpected: %s", exc)
         return data

@@ -1,8 +1,10 @@
 # Memory tiers & skill curation (Bronze → Silver → Gold)
 
-How Alfred keeps **Chroma useful** instead of becoming a junk drawer: capture freely at Bronze, auto-promote only to Silver under hard gates, and **never** write Gold skill cards without a human.
+How a rails-heavy lab keeps **Chroma useful** instead of becoming a junk drawer: capture freely at Bronze, auto-promote only to Silver under hard gates, and **never** write Gold skill cards without a human.
 
 This is separate from **Bronze rolling chat compress** ([bronze-budgets.md](bronze-budgets.md)) — that protects `num_ctx`. This guide is about **long-term memory + Gold skills**.
+
+**Scope of this repo:** the **gates, rubric checklist, and `route_score` demo**. The nightly promote-and-prune job, Mem0 Silver store, and staged Gold apply path live in a **private** lab. Optional Bronze→Chroma upsert from teaching middleware is best-effort only — it does not prune.
 
 ## Tier map
 
@@ -129,7 +131,7 @@ Adapt names to your lab; keep the *roles*:
 
 Gold **git** cards remain SoT; Chroma Gold is a search/inject cache — re-ingest after skill edits (`ingest` / sync script in your private lab).
 
-## Minimal implement order
+## Minimal implement order (private lab)
 
 1. Upsert Bronze with required metadata (middleware + wrap-up hooks).
 2. Nightly: list Bronze → rubric JSON → purge / silver / stage-gold.
@@ -137,4 +139,4 @@ Gold **git** cards remain SoT; Chroma Gold is a search/inject cache — re-inges
 4. Human writes/merges `skills/<slug>/` → ingest Gold.
 5. Add TTL prune once volume hurts.
 
-Skeleton hooks live beside Sentinel ([nightly-sentinel.md](nightly-sentinel.md)). Rubric checklist: [../../examples/curation/RUBRIC_CHECKLIST.md](../../examples/curation/RUBRIC_CHECKLIST.md).
+Teaching hooks here: Sentinel skeleton ([nightly-sentinel.md](nightly-sentinel.md)) + rubric ([../../examples/curation/RUBRIC_CHECKLIST.md](../../examples/curation/RUBRIC_CHECKLIST.md)). Do not expect a full prune cron in this tree.

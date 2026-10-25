@@ -2,6 +2,8 @@
 
 Pattern for trying a new Ollama tag against a live LiteLLM **alias** without hand-editing production blindly.
 
+**Scope of this repo:** this guide is the **pattern and rules of thumb**. Production CLIs (`alfred-model-challenge` / `wire` / `drop` below) live in a **private** host-tools tree. Do not expect those binaries in this public extract — copy the flow into your own scripts.
+
 ## Flow
 
 ```text
@@ -21,7 +23,7 @@ pull candidate → A/B harness vs current alias → judge summary
 6. Smoke failure → **automatic rollback** of config (+ budgets).
 7. Drop removes Ollama tags that are **not** still referenced by an alias; clean challenge report dirs so digests do not bloat.
 
-## Example CLI shape (names may differ in your lab)
+## Example CLI shape (private lab — names may differ)
 
 ```bash
 # Challenge
@@ -35,6 +37,8 @@ alfred-model-wire --tag gemma2:9b --alias alfred-reasoner \
 # Discard experiment
 alfred-model-drop --tag gemma2:9b --yes
 ```
+
+Minimal public stand-in: run [`examples/harness/`](../../examples/harness/) twice (baseline alias vs a temporary LiteLLM model entry), compare keyword gates by hand, then edit `config.yaml` + `bronze_budgets.yaml` yourself.
 
 Backend style:
 

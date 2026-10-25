@@ -32,10 +32,10 @@ preferred_model: alfred-coder   # or your alias
 
 1. **Imperative “never” beats vibes.** If a failure mode burned you once, write it as a rule.
 2. **One primary domain** per card; optional umbrella domains (`coding`, `software-planning`) for transferable skills.
-3. **Applicability cues** (keywords) help routers merge ≤1 transferable skill without dumping the whole library.
+3. **This extract’s router** only honors `#domain:` and `domains.yaml` phrases. Optional `applicability:` YAML is for **private** routers that auto-merge transferable skills — it is unused here; omit it on example cards.
 4. **No secrets** in skill text — paths, patterns, and commands only.
 5. Promote only after reuse; raw learnings stay private until scored.
-6. **Gold is human-gated** — rubric `gold_stage` (total ≥15 **and** verification/actionability ≥4) stages a draft; a human merges git. Never auto-write Gold from a 7B score alone. Full pipeline: [memory-tiers-curation.md](memory-tiers-curation.md).
+6. **Gold is human-gated** — rubric `gold_stage` (total ≥15 **and** verification/actionability ≥4) stages a draft; a human merges git. Never auto-write Gold from a 7B score alone. Pipeline (gates here; cron private): [memory-tiers-curation.md](memory-tiers-curation.md).
 
 See example cards under [`../../skills/`](../../skills/) and `skills/skill-gold-authoring/`.
 
