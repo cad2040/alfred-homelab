@@ -1,0 +1,53 @@
+# Example Alfred-like stack — Ollama + LiteLLM (localhost binds).
+# Not a full production estate. Adapt volumes, models, and keys.
+#
+# Usage:
+#   cp .env.example .env   # set LITELLM_MASTER_KEY
+#   docker compose up -d
+#   docker exec alfred-ollama-example ollama pull qwen2.5:7b-instruct
+#
+# Clients: http://127.0.0.1:4000/v1  Authorization: Bearer $LITELLM_MASTER_KEY
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: alfred-ollama-example
+    restart: unless-stopped
+    environment:
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_MAX_LOADED_MODELS: "2"
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "127.0.0.1:11434:11434"
+    networks: [alfred_example]
+    # GPU (NVIDIA Container Toolkit). Comment out on CPU-only hosts.
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  litellm:
+    image: ghcr.io/berriai/litellm:v1.81.0-stable
+    container_name: alfred-litellm-example
+    restart: unless-stopped
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?set in .env}
+      PYTHONPATH: /app/config
+    volumes:
+      - ./litellm:/app/config:ro
+    command: ["--config", "/app/config/config.yaml", "--port", "4000", "--host", "0.0.0.0"]
+    ports:
+      - "127.0.0.1:4000:4000"
+    depends_on: [ollama]
+    networks: [alfred_example]
+
+networks:
+  alfred_example:
+    name: alfred_example
+
+volumes:
+  ollama_data:
