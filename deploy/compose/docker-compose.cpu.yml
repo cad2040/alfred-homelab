@@ -1,0 +1,7 @@
+# Override: drop NVIDIA device reservation for CPU-only hosts.
+services:
+  ollama:
+    deploy:
+      resources:
+        reservations:
+          devices: []

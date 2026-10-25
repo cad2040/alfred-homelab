@@ -21,13 +21,13 @@ You are helping a human stand up or adapt an **Alfred-like** local LLM stack fro
 
 ## Procedure
 
-1. Read `README.md` and `docs/architecture.md` (strengths/weaknesses).
-2. Ensure Docker works; detect GPU vs CPU and edit Compose if needed.
+1. Read `README.md`, `docs/LEARNING_PATH.md`, and `docs/architecture.md`.
+2. Ensure Docker works; GPU → default compose; CPU → add `-f docker-compose.cpu.yml`.
 3. `cp deploy/compose/.env.example deploy/compose/.env` — generate a random master key; do not echo it into chat logs if avoidable.
-4. `docker compose -f deploy/compose/docker-compose.yml up -d`
-5. `docker exec alfred-ollama-example ollama pull <tag-from-config>`
-6. Smoke `/v1/models` and `/v1/chat/completions` with `alfred-coder`.
-7. Summarize next steps: client wiring, optional Open WebUI, copying Gold skills, model challenge pattern.
+4. `docker compose -f deploy/compose/docker-compose.yml up -d` (plus cpu override if needed).
+5. Pull instruct (+ optional FIM base) tags from config / HUMAN.md.
+6. Smoke `/v1/models` and a `#domain:docker-ufw` chat completion.
+7. Point human at wire-middleware, harness examples, Sentinel skeleton — do not invent estate paths.
 
 ## Out of scope (refuse or defer)
 

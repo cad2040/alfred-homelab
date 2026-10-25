@@ -1,0 +1,9 @@
+# Optional phrase → domain map (used when the user omits #domain:).
+# Prefer explicit #domain:<id> in serious work.
+phrases:
+  "docker-user": docker-ufw
+  "ufw allow": docker-ufw
+  "set -euo": safe-script-production
+  "confirm=yes": safe-script-production
+  "disk usage": disk-usage
+  "duplicate folders": disk-usage

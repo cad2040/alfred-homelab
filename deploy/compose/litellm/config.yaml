@@ -1,5 +1,5 @@
-# Example LiteLLM aliases. Pull matching Ollama tags before use.
-# Prefer alias names in clients so you can rewire backends later.
+# Example LiteLLM aliases + teaching callbacks (Bronze + skill inject + persona).
+# Pull matching Ollama tags before use. Prefer aliases in clients.
 
 model_list:
   - model_name: alfred-coder
@@ -28,7 +28,7 @@ model_list:
       supports_function_calling: true
       max_input_tokens: 32768
 
-  # Optional FIM / autocomplete — pull a small *base* coder tag if you use Twinny-style FIM.
+  # Optional FIM — pull qwen2.5-coder:1.5b-base (or set ALFRED_FIM_TAG) for Bronze summaries.
   # - model_name: alfred-fim
   #   litellm_params:
   #     model: ollama/qwen2.5-coder:1.5b-base
@@ -38,6 +38,10 @@ model_list:
 litellm_settings:
   drop_params: true
   request_timeout: 300
+  callbacks:
+    - alfred_routing_skills.proxy_handler_instance
+    - alfred_middleware_bronze.proxy_handler_instance
+    - custom_prompt.prompt_management
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY

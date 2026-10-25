@@ -4,6 +4,8 @@ Comparison baseline: typical homelab AI boxes — Open WebUI or LibreChat + Olla
 
 Alfred is **not** competing with cloud agents. It is a **personal estate OS with local LLMs as a subsystem**. Grade it that way.
 
+Hands-on path: [LEARNING_PATH.md](LEARNING_PATH.md). Middleware wire-up: [guides/wire-middleware.md](guides/wire-middleware.md).
+
 ## Verdict in one line
 
 Among single-builder homelabs, Alfred-style stacks sit in the **top few percent for ops discipline and institutional memory**, and only **average for raw model IQ / UX polish**. The rails are the product; the 7B/9B weights are the engine.

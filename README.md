@@ -1,83 +1,71 @@
 # Alfred Homelab
 
-**A curated, public extract of patterns from a real local-LLM estate OS** — not a dump of someone’s private lab.
+**A how-to guide and sanitized extract** for building an Alfred-like local-LLM lab: aliases, Gold skills, Bronze context compression, eval harnesses, and a nightly Sentinel — without dumping a private estate.
 
-Alfred is how one builder runs **Ollama + LiteLLM + skills + eval** on a single GPU box (RTX 3060-class) without pretending a 7B/9B is Claude. The product is the **rails**: aliases, Gold skills, Bronze context compression, fail-closed host ops, and measured trust.
+Private estate repos stay private. This repo helps other homelab makers walk the same path: **rails first, weights second**.
 
-> Private estate repo stays private. This repo shares **reusable architecture, guides, deploy starters, and example Gold skills** for other homelab makers and agents.
+## Start here
 
-## What you get
+1. **[docs/LEARNING_PATH.md](docs/LEARNING_PATH.md)** — ordered journey (gateway → skills → Bronze → VRAM → challenge/wire → harness → Sentinel)
+2. **[docs/architecture.md](docs/architecture.md)** — strengths, weaknesses, design principles
+3. **[deploy/HUMAN.md](deploy/HUMAN.md)** / **[deploy/agent/AGENTS.md](deploy/agent/AGENTS.md)** — bring-up
 
-| Area | Contents |
-|------|----------|
-| Architecture | Strengths, weaknesses, and how pieces fit |
-| Deploy | Example Compose + human & agent quickstarts |
-| Guides | Model challenge/wire mindset, Bronze budgets, skill authoring |
-| Example Gold skills | Sanitized, transferable cards (Docker/UFW, safe scripts, disk hunts, …) |
-
-## Quick start (human)
+## Quick start
 
 ```bash
 git clone https://github.com/cad2040/alfred-homelab.git
 cd alfred-homelab
 cp deploy/compose/.env.example deploy/compose/.env
-# edit .env — set LITELLM_MASTER_KEY to a long random string
-cd deploy/compose && docker compose up -d
+# set LITELLM_MASTER_KEY to a long random string
+
+cd deploy/compose
+# GPU:
+docker compose up -d
+# CPU-only:
+# docker compose -f docker-compose.yml -f docker-compose.cpu.yml up -d
+
+docker exec alfred-ollama-example ollama pull qwen2.5:7b-instruct
+# optional Bronze summarizer (base tag):
+# docker exec alfred-ollama-example ollama pull qwen2.5-coder:1.5b-base
 ```
 
-Point Continue / Open WebUI / any OpenAI client at `http://127.0.0.1:4000/v1` with that key. See [deploy/HUMAN.md](deploy/HUMAN.md).
+Clients: `http://127.0.0.1:4000/v1` with your master key. Try a chat that includes `#domain:docker-ufw`.
 
-## Quick start (AI agent)
+## What this repo includes
 
-Agents: read [deploy/agent/AGENTS.md](deploy/agent/AGENTS.md) first, then apply Compose from `deploy/compose/` without inventing secrets or publishing Ollama on `0.0.0.0`.
+| Area | Location |
+|------|----------|
+| Learning path | `docs/LEARNING_PATH.md` |
+| Architecture (honest) | `docs/architecture.md` |
+| Wire middleware | `docs/guides/wire-middleware.md` + `reference/litellm/` |
+| Bronze budgets | `docs/guides/bronze-budgets.md` |
+| Model challenge / wire / drop | `docs/guides/model-challenge-wire-drop.md` |
+| Eval harness | `docs/guides/eval-harness.md` + `examples/harness/` |
+| Nightly Sentinel | `docs/guides/nightly-sentinel.md` + `examples/sentinel/` |
+| Example Gold skills | `skills/` |
+| Example Compose | `deploy/compose/` (callbacks mounted) |
 
-## Architecture (one screen)
+### Example Compose scope (be precise)
 
-```text
-Clients (Continue, Open WebUI, scripts)
-        │  OpenAI-compatible
-        ▼
-   LiteLLM aliases  ── (full labs also: routing / Bronze / persona)
-        │
-        ▼
-   Ollama (ideally: slot-1 FIM pin + slot-2 specialist hot-swap)
-```
+**Included:** Ollama + LiteLLM on localhost, teaching **skill inject**, **Bronze** middleware, persona, sample skills, budgets.
 
-Deep dive: [docs/architecture.md](docs/architecture.md).
-
-### What the example Compose actually ships
-
-**Included:** Ollama + LiteLLM aliases on `127.0.0.1`, sample `bronze_budgets.yaml`, localhost binds.
-
-**Not included (on purpose):** skill router/middleware, Chroma, Open WebUI, eval harness, model-challenge CLIs, backups/DR. Those are patterns documented here; wire them in your private lab or future PRs. Do not assume `docker compose up` gives you full Alfred.
+**Not included:** full private router (SearXNG, applicability judge, deny lists), DR/backups, SMTP digests, production challenge CLIs, Open WebUI. Those are documented as patterns to grow privately.
 
 ## Example Gold skills
 
-Under [`skills/`](skills/):
-
-- `docker-ufw` — DOCKER-USER vs UFW; bind localhost for inference DBs
-- `safe-script-production` — dry-run / CONFIRM gates for mutating scripts
-- `disk-usage` — path fidelity + capacity/dupe shortlists (no inventing mounts)
-- `skill-gold-authoring` — how to write a Gold card
-- `bronze-context` — when/why rolling summarize before ctx overflow
-- `vram-runtime` — FIM pin + specialist hot-swap mental model
-
-Copy into your own skill registry; adapt domain IDs and paths to **your** lab.
+- `docker-ufw` — DOCKER-USER vs UFW
+- `safe-script-production` — dry-run / CONFIRM mutators
+- `disk-usage` — path fidelity + dupe shortlists
+- `bronze-context` / `vram-runtime` / `skill-gold-authoring`
 
 ## Relationship to a private estate
 
 | This public repo | Your private estate |
 |------------------|---------------------|
-| Patterns & examples | Live `domains.yaml`, digests, DR, personal skills |
-| Generic example paths | Your mounts / hostnames |
-| Minimal example Compose | Production compose + secrets + middleware |
-
-Do **not** publish your private estate SoT. Curate outward; keep the messy truth inward.
+| How-to + sanitized reference code | Live domains, digests, DR, personal skills |
+| Minimal Compose + teaching callbacks | Production compose, secrets, host paths |
+| Example harness / Sentinel skeleton | Full matrices, cron, mail |
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Skills retain practical “never” rules; adapt at your own risk on production hosts.
-
-## Status
-
-Living extract. APIs and script names may lag a private lab; treat this as **patterns + starting points**, not a turnkey appliance.
+MIT — see [LICENSE](LICENSE). Skills and firewall examples can break hosts if misapplied; read twice, HITL always.

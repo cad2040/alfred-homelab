@@ -8,3 +8,7 @@ __pycache__/
 .idea/
 .vscode/
 deploy/compose/.env
+examples/harness/runs/
+examples/sentinel/digests/
+**/digests/
+*.log

@@ -1,0 +1,6 @@
+# Example — install only after editing paths and env.
+# FIM pin must stay loaded; run when the lab is idle.
+
+# 0 2 * * *  DIGEST_DIR=/var/lib/alfred/digests/morning LITELLM_MASTER_KEY=… \
+#   /usr/bin/python3 /opt/alfred-homelab/examples/sentinel/sentinel_skeleton.py \
+#   >> /var/log/alfred-sentinel.log 2>&1

@@ -1,10 +1,10 @@
-# Example Alfred-like stack — Ollama + LiteLLM (localhost binds).
-# Not a full production estate. Adapt volumes, models, and keys.
+# Example Alfred-like stack — Ollama + LiteLLM with teaching callbacks.
+# Not a full private estate. Adapt volumes, models, and keys.
 #
-# Usage:
-#   cp .env.example .env   # set LITELLM_MASTER_KEY
-#   docker compose up -d
-#   docker exec alfred-ollama-example ollama pull qwen2.5:7b-instruct
+# GPU (default):
+#   cp .env.example .env && docker compose up -d
+# CPU-only:
+#   docker compose -f docker-compose.yml -f docker-compose.cpu.yml up -d
 #
 # Clients: http://127.0.0.1:4000/v1  Authorization: Bearer $LITELLM_MASTER_KEY
 
@@ -21,7 +21,6 @@ services:
     ports:
       - "127.0.0.1:11434:11434"
     networks: [alfred_example]
-    # GPU (NVIDIA Container Toolkit). Comment out on CPU-only hosts.
     deploy:
       resources:
         reservations:
@@ -37,8 +36,19 @@ services:
     environment:
       LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?set in .env}
       PYTHONPATH: /app/config
+      OLLAMA_HOST: http://ollama:11434
+      ALFRED_SKILLS_ROOT: /app/skills
+      ALFRED_DOMAINS_YAML: /app/config/domains.yaml
+      ALFRED_BRONZE_BUDGETS: /app/config/bronze_budgets.yaml
+      ALFRED_LITELLM_CONFIG: /app/config/config.yaml
+      # Optional Bronze→Chroma ingest:
+      # CHROMA_URL: http://chroma:8000/api/v2/tenants/default_tenant/databases/default_database
     volumes:
       - ./litellm:/app/config:ro
+      - ../../reference/litellm/alfred_middleware_bronze.py:/app/config/alfred_middleware_bronze.py:ro
+      - ../../reference/litellm/alfred_routing_skills.py:/app/config/alfred_routing_skills.py:ro
+      - ../../reference/litellm/custom_prompt.py:/app/config/custom_prompt.py:ro
+      - ../../skills:/app/skills:ro
     command: ["--config", "/app/config/config.yaml", "--port", "4000", "--host", "0.0.0.0"]
     ports:
       - "127.0.0.1:4000:4000"
