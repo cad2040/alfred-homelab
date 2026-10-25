@@ -6,7 +6,7 @@ Private estate repos stay private. This repo helps other homelab makers walk the
 
 ## Start here
 
-1. **[docs/LEARNING_PATH.md](docs/LEARNING_PATH.md)** — ordered journey (gateway → skills → Bronze → VRAM → challenge/wire → harness → Sentinel)
+1. **[docs/LEARNING_PATH.md](docs/LEARNING_PATH.md)** — ordered journey (gateway → skills → Bronze → VRAM → challenge/wire → harness → Sentinel → memory tiers)
 2. **[docs/architecture.md](docs/architecture.md)** — strengths, weaknesses, design principles
 3. **[deploy/HUMAN.md](deploy/HUMAN.md)** / **[deploy/agent/AGENTS.md](deploy/agent/AGENTS.md)** — bring-up
 
@@ -42,6 +42,7 @@ Clients: `http://127.0.0.1:4000/v1` with your master key. Try a chat that includ
 | Model challenge / wire / drop | `docs/guides/model-challenge-wire-drop.md` |
 | Eval harness | `docs/guides/eval-harness.md` + `examples/harness/` |
 | Nightly Sentinel | `docs/guides/nightly-sentinel.md` + `examples/sentinel/` |
+| Memory tiers / prune | `docs/guides/memory-tiers-curation.md` + `examples/curation/` |
 | Example Gold skills | `skills/` |
 | Example Compose | `deploy/compose/` (callbacks mounted) |
 

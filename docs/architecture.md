@@ -31,6 +31,9 @@ FIM (small autocomplete) **pinned** in slot-1; one specialist **hot-swapped** in
 ### 5. HITL as constitution
 Digests, Spec Kit drafts, staged model wires — **signal not authority**. The community often roleplays “autonomous agents” until a bad `rm` or firewall rule.
 
+### 5b. Memory tiers with prune
+Bronze capture is cheap; Silver auto-promote is gated; Gold is **human-only**. Nightly rubric + purge keeps Chroma from filling with vibes — see [guides/memory-tiers-curation.md](guides/memory-tiers-curation.md).
+
 ### 6. Plan vs implement split
 Separate **planner** and **coder** aliases (even soft 9B planners) beat “paste megaprompt into Agent.” Few labs separate those roles at all.
 

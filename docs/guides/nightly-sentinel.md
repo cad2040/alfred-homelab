@@ -49,7 +49,7 @@ Port privately, one stage at a time:
 1. Telemetry DB / `docker ps` / `ollama ps`
 2. Security alias with a strict system prompt
 3. Domain-tag suggestions against your registry
-4. Memory rubric → staged Gold drafts (human merge)
+4. Memory rubric → purge Bronze noise / pin Silver / stage Gold drafts (human merge) — see [memory-tiers-curation.md](memory-tiers-curation.md)
 5. Backup scripts you already trust
 6. Hook to weekly eval after flock release
 

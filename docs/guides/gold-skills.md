@@ -35,6 +35,7 @@ preferred_model: alfred-coder   # or your alias
 3. **Applicability cues** (keywords) help routers merge ≤1 transferable skill without dumping the whole library.
 4. **No secrets** in skill text — paths, patterns, and commands only.
 5. Promote only after reuse; raw learnings stay private until scored.
+6. **Gold is human-gated** — rubric `gold_stage` (total ≥15 **and** verification/actionability ≥4) stages a draft; a human merges git. Never auto-write Gold from a 7B score alone. Full pipeline: [memory-tiers-curation.md](memory-tiers-curation.md).
 
 See example cards under [`../../skills/`](../../skills/) and `skills/skill-gold-authoring/`.
 

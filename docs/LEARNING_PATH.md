@@ -1,6 +1,6 @@
 # Learning path — build an Alfred-like lab
 
-Ordered path from “chat UI on Ollama” to **rails** (aliases, skills, Bronze, eval, nightly HITL). Each step is useful alone; later steps assume earlier ones.
+Ordered path from “chat UI on Ollama” to **rails** (aliases, skills, Bronze, eval, nightly HITL, memory prune). Each step is useful alone; later steps assume earlier ones.
 
 ## 0. Mindset
 
@@ -67,6 +67,15 @@ Read [architecture.md](architecture.md). Accept: small local models need **polic
 
 **Done when:** a cron job writes a morning digest you actually read.
 
-## 9. What stays private
+## 9. Memory tiers & Chroma prune (week 4+)
+
+1. Read [guides/memory-tiers-curation.md](guides/memory-tiers-curation.md).
+2. Score notes with [`examples/curation/RUBRIC_CHECKLIST.md`](../examples/curation/RUBRIC_CHECKLIST.md); run [`route_score.py`](../examples/curation/route_score.py).
+3. Wire: Bronze capture → nightly purge/silver → **HITL only** for Gold git skills.
+4. Confirm Bronze collection size **sawtooths** (grows by day, shrinks after nightly), not climbs forever.
+
+**Done when:** low-quality Bronze is deleted automatically and Gold never appears without a human merge.
+
+## 10. What stays private
 
 Your real `domains.yaml`, digests, DR, personal IoT, SMTP, master keys, and full middleware forks with estate paths — keep those in a **private** repo. Curate outward; don’t dump inward.
