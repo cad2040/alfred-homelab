@@ -37,16 +37,19 @@ Agents: read [deploy/agent/AGENTS.md](deploy/agent/AGENTS.md) first, then apply 
 Clients (Continue, Open WebUI, scripts)
         │  OpenAI-compatible
         ▼
-   LiteLLM aliases  ── routing / Bronze compress / persona
+   LiteLLM aliases  ── (full labs also: routing / Bronze / persona)
         │
         ▼
-   Ollama (slot-1 FIM pin + slot-2 specialist hot-swap)
-        │
-        ├── Gold skills (domain cards injected by routing)
-        └── Eval harness (optional — trust bands, not auto-promote)
+   Ollama (ideally: slot-1 FIM pin + slot-2 specialist hot-swap)
 ```
 
 Deep dive: [docs/architecture.md](docs/architecture.md).
+
+### What the example Compose actually ships
+
+**Included:** Ollama + LiteLLM aliases on `127.0.0.1`, sample `bronze_budgets.yaml`, localhost binds.
+
+**Not included (on purpose):** skill router/middleware, Chroma, Open WebUI, eval harness, model-challenge CLIs, backups/DR. Those are patterns documented here; wire them in your private lab or future PRs. Do not assume `docker compose up` gives you full Alfred.
 
 ## Example Gold skills
 
@@ -66,8 +69,8 @@ Copy into your own skill registry; adapt domain IDs and paths to **your** lab.
 | This public repo | Your private estate |
 |------------------|---------------------|
 | Patterns & examples | Live `domains.yaml`, digests, DR, personal skills |
-| Generic `/srv/alfred` paths | Your mounts / hostnames |
-| Example Compose | Production compose + secrets |
+| Generic example paths | Your mounts / hostnames |
+| Minimal example Compose | Production compose + secrets + middleware |
 
 Do **not** publish your private estate SoT. Curate outward; keep the messy truth inward.
 
