@@ -1,6 +1,6 @@
 # Alfred Homelab
 
-**A how-to guide and sanitized extract** for building an Alfred-like local-LLM lab: aliases, Gold skills, Bronze context compression, eval harnesses, and a nightly Sentinel — without dumping a private estate.
+**A how-to guide and sanitized extract** for building an Alfred-like local-LLM lab: aliases, Gold skills, Bronze compression, and the *patterns* for eval / Sentinel / curation — without dumping a private estate.
 
 Private estate repos stay private. This repo helps other homelab makers walk the same path: **rails first, weights second**.
 

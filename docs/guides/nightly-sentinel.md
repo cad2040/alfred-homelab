@@ -1,6 +1,8 @@
 # Nightly Sentinel (HITL ops agent)
 
-Sentinel is a **scheduled, flock-guarded pipeline** that observes the lab, asks specialists for commentary, writes a morning digest, and optionally kicks backups / eval hooks. It is **not** allowed to silently rewrite production config or push git.
+Sentinel, in a full private lab, is a **scheduled, flock-guarded pipeline** that observes the host, asks specialists for commentary, writes a morning digest, and optionally kicks backups / eval hooks. It is **not** allowed to silently rewrite production config or push git.
+
+**Scope of this repo:** digest **skeleton** only (`examples/sentinel/`). Telemetry, mail, backups, and memory prune are private stages.
 
 ## Pipeline (reference stages)
 
