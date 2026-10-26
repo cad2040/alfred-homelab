@@ -1,0 +1,97 @@
+# Thin Alfred template domain registry (ops-core only).
+# Prefer explicit #domain:<id>. Phrase triggers work without a tag.
+version: 1
+updated: "2026-10-26"
+
+phrase_triggers:
+  - phrase: "Coach this Prompt:"
+    domain_id: prompt-coach
+    case_insensitive: true
+
+domains:
+  - id: prompt-coach
+    tag: "#domain:prompt-coach"
+    title: Coach this Prompt
+    description: >
+      Rewrite rough thoughts into an agent-optimized message. Do not execute
+      the coached task unless asked.
+    skills:
+      - coach-this-prompt
+    preferred_model: alfred-reasoner
+    keywords:
+      - Coach this Prompt
+      - rewrite prompt
+      - prompt coach
+
+  - id: docker-ufw
+    tag: "#domain:docker-ufw"
+    title: Docker Compose + UFW
+    description: >
+      DOCKER-USER vs UFW, LAN CIDR placeholders, localhost publishes for
+      Ollama/LiteLLM.
+    skills:
+      - docker-ufw
+    preferred_model: alfred-coder
+    keywords:
+      - DOCKER-USER
+      - ufw allow
+      - docker compose
+      - published ports
+
+  - id: safe-script-production
+    tag: "#domain:safe-script-production"
+    title: Safe script production
+    description: >
+      Dry-run / CONFIRM=yes host mutators and careful repo micro-edits.
+    skills:
+      - safe-script-production
+    preferred_model: alfred-coder
+    keywords:
+      - set -euo
+      - CONFIRM=yes
+      - dry-run
+      - bash script
+      - shell script
+
+  - id: vram-runtime
+    tag: "#domain:vram-runtime"
+    title: VRAM / Ollama runtime
+    description: >
+      MAX_LOADED=1, KV q8_0, FIM on-demand, flock before batch LLM jobs.
+    skills:
+      - vram-runtime
+    preferred_model: alfred-coder
+    keywords:
+      - keep_alive
+      - MAX_LOADED
+      - alfred-vram
+      - nvidia-smi
+      - OLLAMA_NUM_PARALLEL
+
+  - id: bronze-context
+    tag: "#domain:bronze-context"
+    title: Bronze rolling context
+    description: >
+      Compress long chats before num_ctx overflow; self-summarize then FIM.
+    skills:
+      - bronze-context
+    preferred_model: alfred-coder
+    keywords:
+      - bronze compress
+      - context limit
+      - rolling summary
+      - empty stream
+
+  - id: skill-gold-authoring
+    tag: "#domain:skill-gold-authoring"
+    title: Gold skill authoring
+    description: >
+      Write Tier-1 skills under inject/ingest caps; soft-park deferred work.
+    skills:
+      - skill-gold-authoring
+    preferred_model: alfred-reasoner
+    keywords:
+      - write a skill
+      - Gold skill
+      - skill authoring
+      - promote learning

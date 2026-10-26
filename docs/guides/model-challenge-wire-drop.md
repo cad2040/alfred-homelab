@@ -2,7 +2,7 @@
 
 Pattern for trying a new Ollama tag against a live LiteLLM **alias** without hand-editing production blindly.
 
-**Scope of this repo:** this guide is the **pattern and rules of thumb**. Production CLIs (`alfred-model-challenge` / `wire` / `drop` below) live in a **private** host-tools tree. Do not expect those binaries in this public extract — copy the flow into your own scripts.
+**Scope of this repo:** this guide is the **pattern and rules of thumb**. Production CLIs (`alfred-model-challenge` / `wire` / `drop` below) live in a **private** host-tools tree. Do not expect those binaries in the deploy template — copy the flow into your own scripts.
 
 ## Flow
 

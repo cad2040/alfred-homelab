@@ -1,45 +1,46 @@
-# Agent deploy playbook (Alfred Homelab example)
+# Agent deploy playbook (Alfred template)
 
-You are helping a human stand up or adapt an **Alfred-like** local LLM stack from this public repo. Their private estate (if any) is out of scope unless they paste paths.
+You are helping a human stand up an **Alfred-like** local LLM stack from this
+**deploy template**. Their private estate (if any) is out of scope unless they
+paste paths.
 
 ## Goals
 
-1. Bring up `deploy/compose` safely (localhost binds).
-2. Pull a chat model matching `litellm/config.yaml`.
-3. Verify `/v1/models` + a tiny chat completion.
-4. Point them at architecture + Gold skill examples — do not invent domains.
+1. Run `./scripts/bootstrap.sh` then `./scripts/smoke.sh`.
+2. Verify skill inject (`#domain:docker-ufw` → DOCKER-USER) and Coach phrase.
+3. Point clients at `alfred-coder` / `alfred-reasoner` aliases on `127.0.0.1:4000`.
+4. Treat Alfred as a **HITL co-pilot** — never an unsupervised implementer.
 
 ## Hard constraints
 
 1. **Never** commit `.env` or real `LITELLM_MASTER_KEY` values.
 2. **Never** change Compose publishes to `0.0.0.0` without explicit human approval + firewall plan (`skills/docker-ufw`).
 3. **Never** `ollama rm` baseline tags the human still uses.
-4. **Never** invent `#domain:` IDs; only use skills shipped here or the human’s registry.
+4. **Never** invent `#domain:` IDs; only use `routing/domains.yaml` / shipped skills.
 5. Prefer **aliases** (`alfred-coder`) in client config, not raw Ollama tags.
-6. Destructive host scripts → follow `skills/safe-script-production` (dry-run, `CONFIRM=yes`).
-7. If wiring a new model, update Bronze budgets when `num_ctx` changes (`docs/guides/bronze-budgets.md`).
+6. Destructive host scripts → `skills/safe-script-production` (dry-run, `CONFIRM=yes`).
+7. After skill/domain edits → `./scripts/sync-skills.sh`.
+8. Do not soft-park or remove `coach-this-prompt`.
 
 ## Procedure
 
-1. Read `README.md`, `docs/LEARNING_PATH.md`, and `docs/architecture.md`.
-2. Ensure Docker works; GPU → default compose; CPU → add `-f docker-compose.cpu.yml`.
-3. `cp deploy/compose/.env.example deploy/compose/.env` — generate a random master key; do not echo it into chat logs if avoidable.
-4. `docker compose -f deploy/compose/docker-compose.yml up -d` (plus cpu override if needed).
-5. Pull instruct (+ optional FIM base) tags from config / HUMAN.md.
-6. Smoke `/v1/models` and a `#domain:docker-ufw` chat completion.
-7. Point human at wire-middleware, harness examples, Sentinel skeleton — do not invent estate paths.
+1. Read `README.md`, `docs/PRIVATE_VS_TEMPLATE.md`, `docs/architecture.md`.
+2. `./scripts/bootstrap.sh` (CPU: `ALFRED_CPU=1 ./scripts/bootstrap.sh`).
+3. Ensure `LITELLM_MASTER_KEY` is a long random string in `deploy/compose/.env`.
+4. `./scripts/smoke.sh`.
+5. Optional depth: `docs/LEARNING_PATH.md` + `examples/` — do not invent estate paths.
 
 ## Out of scope (refuse or defer)
 
 - Publishing their private estate repo
 - Baby-monitor / personal IoT stacks
 - Blind `iptables -F` or disabling UFW
-- Claiming Gemini/judge scores authorize auto-rewire
+- Claiming judge scores authorize auto-rewire
+- Adding SearXNG / Sentinel / DR as if they ship here
 
 ## Success criteria
 
-- Compose healthy; Ollama has the chat tag; LiteLLM answers on `127.0.0.1:4000`
-- `#domain:docker-ufw` smoke mentions DOCKER-USER (skill inject works)
-- Human understands aliases + that small local models need skills/rails
-- Human understands this repo is a **teaching subset** (no challenge CLIs / prune cron)
-- No secrets written into the git tree
+- Compose healthy; LiteLLM answers on `127.0.0.1:4000`
+- Smoke passes (DOCKER-USER + Coach structure)
+- Human understands: co-pilot, MAX_LOADED=1, thin skills, template ≠ private estate
+- No secrets in the git tree

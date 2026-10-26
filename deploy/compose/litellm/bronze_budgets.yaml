@@ -1,8 +1,14 @@
-# Example per-alias Bronze compress triggers (≈ 0.61 × num_ctx).
+# Per-alias Bronze compress triggers (≈ 0.61 × num_ctx).
 # Keep in sync when you change num_ctx on an alias.
 alfred-coder:
-  num_ctx: 32768
-  compress_threshold: 19988
+  num_ctx: 16384
+  compress_threshold: 9994
 alfred-reasoner:
-  num_ctx: 32768
-  compress_threshold: 19988
+  num_ctx: 16384
+  compress_threshold: 9994
+alfred-technical-planner:
+  num_ctx: 16384
+  compress_threshold: 9994
+alfred-fim:
+  num_ctx: 8192
+  compress_threshold: 4997

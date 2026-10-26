@@ -1,19 +1,20 @@
-# Example LiteLLM aliases + teaching callbacks (Bronze + skill inject + persona).
-# Pull matching Ollama tags before use. Prefer aliases in clients.
+# Alfred deploy template — LiteLLM aliases + sanitized twins.
+# Pull matching Ollama tags via scripts/bootstrap.sh before use.
+# Clients: http://127.0.0.1:4000/v1  Authorization: Bearer $LITELLM_MASTER_KEY
 
 model_list:
   - model_name: alfred-coder
     litellm_params:
-      model: openai/qwen2.5:7b-instruct
+      model: openai/qwen2.5-coder:7b-instruct
       api_base: http://ollama:11434/v1
       api_key: ollama
       timeout: 300
       extra_body:
         options:
-          num_ctx: 32768
+          num_ctx: 16384
     model_info:
       supports_function_calling: true
-      max_input_tokens: 32768
+      max_input_tokens: 16384
 
   - model_name: alfred-reasoner
     litellm_params:
@@ -23,24 +24,45 @@ model_list:
       timeout: 300
       extra_body:
         options:
-          num_ctx: 32768
+          num_ctx: 16384
     model_info:
       supports_function_calling: true
-      max_input_tokens: 32768
+      max_input_tokens: 16384
 
-  # Optional FIM — pull qwen2.5-coder:1.5b-base (or set ALFRED_FIM_TAG) for Bronze summaries.
-  # - model_name: alfred-fim
-  #   litellm_params:
-  #     model: ollama/qwen2.5-coder:1.5b-base
-  #     api_base: http://ollama:11434
-  #     timeout: 60
+  - model_name: alfred-technical-planner
+    litellm_params:
+      model: openai/qwen2.5:7b-instruct
+      api_base: http://ollama:11434/v1
+      api_key: ollama
+      timeout: 300
+      extra_body:
+        options:
+          num_ctx: 16384
+    model_info:
+      supports_function_calling: true
+      max_input_tokens: 16384
+
+  # Optional FIM — pull qwen2.5-coder:1.5b-base for Bronze /api/generate fallback.
+  - model_name: alfred-fim
+    litellm_params:
+      model: openai/qwen2.5-coder:1.5b-base
+      api_base: http://ollama:11434/v1
+      api_key: ollama
+      timeout: 60
+      additional_drop_params: ["tools", "tool_choice", "functions"]
+      extra_body:
+        options:
+          num_ctx: 8192
+    model_info:
+      supports_function_calling: false
+      max_input_tokens: 8192
 
 litellm_settings:
   drop_params: true
   request_timeout: 300
   callbacks:
-    - alfred_routing_skills.proxy_handler_instance
-    - alfred_middleware_bronze.proxy_handler_instance
+    - alfred_routing_callback.proxy_handler_instance
+    - alfred_middleware.proxy_handler_instance
     - custom_prompt.prompt_management
 
 general_settings:

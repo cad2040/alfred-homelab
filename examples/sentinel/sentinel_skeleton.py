@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Minimal nightly Sentinel skeleton (public teaching extract).
+"""Minimal nightly Sentinel skeleton (optional depth — not day-1 template).
 
-Writes a morning digest via LiteLLM. Does NOT unload FIM, does NOT git push,
-does NOT apply config changes.
+Writes a morning digest via LiteLLM. Does NOT git push, does NOT apply config
+changes, does NOT invent VRAM unload theatre (respect MAX_LOADED=1 + flock).
 
 Env:
   LITELLM_BASE          default http://127.0.0.1:4000/v1
@@ -76,7 +76,7 @@ def main() -> int:
     telemetry_blob = (
         f"date_utc: {day}\n"
         "note: skeleton telemetry only — wire docker/ollama/disk collectors privately.\n"
-        "rule: never unload FIM pin; never git push from Sentinel.\n"
+        "rule: respect MAX_LOADED=1 + flock; never git push from Sentinel.\n"
     )
 
     system = (

@@ -2,7 +2,7 @@
 
 The harness is how a rails-heavy lab stays honest: **fixed prompts → call an alias → gate the answer** (and optionally ask a cloud Flash model to comment). Green matrix ≠ unsupervised agent. HITL required to change prod.
 
-**Scope of this repo:** a **toy** keyword harness under [`examples/harness/`](../../examples/harness/). Full matrices, trust-band reports, and Gemini/Flash judges are private-lab work — this extract shows the shape so you can grow your own.
+**Scope of this repo:** a **toy** keyword harness under [`examples/harness/`](../../examples/harness/). Full matrices, trust-band reports, and Gemini/Flash judges are **private upgrades** — this optional depth shows the shape so you can grow your own after smoke.
 
 ## Why bother
 
@@ -31,7 +31,7 @@ optional judge           # Gemini Flash advisory (private)
 |------|--------|
 | Units / dense coding | concurrency, pools, SQL races |
 | Spec Kit | `#domain:` discipline, refuse fake domains |
-| Sysadmin | disk-usage path fidelity, safe-script KEEP/DROP |
+| Sysadmin | docker-ufw inject, safe-script dry-run / CONFIRM |
 | Sentinel contracts | security/stability prompt shapes |
 | Model challenge | candidate vs baseline alias (see model-challenge guide) |
 

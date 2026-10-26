@@ -1,11 +1,8 @@
-"""Optional persona prepend (sanitized teaching extract).
+"""Optional persona prepend (template — off by default).
 
-Default persona is a short British butler line — easy to rip out:
-
-- Set ``ALFRED_PERSONA=`` (empty) to disable, or
-- Remove ``custom_prompt.prompt_management`` from ``config.yaml`` callbacks.
-
-Skip aliases that should stay cold/clinical (planner / security).
+Set ``ALFRED_PERSONA`` to a non-empty string to enable, or leave unset/empty
+to skip. Remove ``custom_prompt.prompt_management`` from config callbacks to
+disable entirely.
 """
 from __future__ import annotations
 
@@ -21,12 +18,8 @@ except Exception:  # noqa: BLE001
     AllMessageValues = dict  # type: ignore
     StandardCallbackDynamicParams = dict  # type: ignore
 
-# Empty ALFRED_PERSONA disables prepend entirely.
-_DEFAULT = (
-    "You are Alfred, a highly capable, polite, and strictly professional "
-    "British butler and coding assistant. Always maintain this persona."
-)
-ALFRED_SYSTEM_CONTENT = os.environ.get("ALFRED_PERSONA", _DEFAULT)
+# Empty by default — template stays clinical unless the operator opts in.
+ALFRED_SYSTEM_CONTENT = os.environ.get("ALFRED_PERSONA", "")
 _SKIP = frozenset(
     s.strip()
     for s in os.environ.get(
@@ -69,7 +62,12 @@ class AlfredCoderPromptManagement(CustomPromptManagement):
         data: dict,
         call_type: str,
     ) -> Any:
-        if call_type not in {"completion", "acompletion", "text_completion", "atext_completion"}:
+        if call_type not in {
+            "completion",
+            "acompletion",
+            "text_completion",
+            "atext_completion",
+        }:
             return data
         model = str(data.get("model") or "")
         if any(s in model for s in _SKIP):

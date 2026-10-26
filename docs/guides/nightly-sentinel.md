@@ -1,8 +1,13 @@
 # Nightly Sentinel (HITL ops agent)
 
-Sentinel, in a full private lab, is a **scheduled, flock-guarded pipeline** that observes the host, asks specialists for commentary, writes a morning digest, and optionally kicks backups / eval hooks. It is **not** allowed to silently rewrite production config or push git.
+Sentinel, in a full private lab, is a **scheduled, flock-guarded pipeline** that
+observes the host, asks specialists for commentary, writes a morning digest, and
+optionally kicks backups / eval hooks. It is **not** allowed to silently rewrite
+production config or push git.
 
-**Scope of this repo:** digest **skeleton** only (`examples/sentinel/`). Telemetry, mail, backups, and memory prune are private stages.
+**Scope of this repo:** digest **skeleton** only (`examples/sentinel/`).
+Telemetry, mail, backups, and memory prune are **private upgrades** — not part
+of the deploy template.
 
 ## Pipeline (reference stages)
 
@@ -19,10 +24,11 @@ flock (VRAM / mutual exclusion)
 
 Hard rules from real ops:
 
-1. **Never unload the FIM pin** to run Sentinel.
+1. **Do not fight MAX_LOADED=1** — wait for the flock; do not invent unload/load
+   theatre or permanent FIM pins to “make room.”
 2. **Never git push** from Sentinel.
 3. Digests and staged promotions are **proposals** — humans apply.
-4. Hold a **VRAM flock** so chat and nightly jobs don’t thrash slot-2.
+4. Hold a **VRAM flock** so chat and nightly jobs do not thrash the single resident.
 5. Time it for idle hours (e.g. `0 2 * * *`).
 
 ## What to put in a digest
@@ -34,15 +40,14 @@ Hard rules from real ops:
 
 ## Skeleton in this repo
 
-**Scope:** a digest writer with flock + LiteLLM chat. No telemetry collectors, mail, backups, or memory prune — those are private stages you add later.
-
-[`examples/sentinel/sentinel_skeleton.py`](../../examples/sentinel/sentinel_skeleton.py) demonstrates:
+[`examples/sentinel/sentinel_skeleton.py`](../../examples/sentinel/sentinel_skeleton.py)
+demonstrates:
 
 - env-based config (no hardcoded estate paths)
 - flock
 - LiteLLM chat call to `alfred-reasoner`
 - writing `DIGEST_DIR/YYYY-MM-DD.md`
-- refusing to unload FIM
+- no git push / no auto-apply
 
 Cron example: [`examples/sentinel/crontab.example`](../../examples/sentinel/crontab.example).
 

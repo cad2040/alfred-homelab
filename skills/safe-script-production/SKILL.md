@@ -1,51 +1,44 @@
 ---
 name: safe-script-production
 description: >-
-  Gates for LLM-authored shell/Python that mutates hosts or repos: verbatim
-  paths from evidence, dry-run first, set -euo pipefail, no no-op mv/ln loops,
-  no inventing paths. Transferable coding.
+  Lane A: careful repo micro-edits. Lane B: dry-run default host rm/mv; mutate
+  only with CONFIRM=yes. Prefer for DECISION: apply / alfred-coder.
+source_repo: cad2040/alfred-homelab
+source_path: skills/safe-script-production
 primary_domain: safe-script-production
-domains: [safe-script-production, coding]
-routing_tags:
-  - "#domain:safe-script-production"
-  - "#domain:coding"
+domains: [safe-script-production]
+routing_tags: ["#domain:safe-script-production"]
 preferred_model: alfred-coder
 ---
 
-# Safe script production (host / repo mutations)
+# Safe script production
 #domain: safe-script-production
 
-## Hard rules
+## Pick one lane
 
-1. **Paths verbatim from evidence** (tool output, user paste, directory listings). Never invent or “pretty” a path.
-2. **Dry-run by default.** Print the plan or use `rsync -n` / `diff`. Mutation only behind `CONFIRM=yes` (or equivalent).
-3. **`set -euo pipefail`** (bash) or fail-fast equivalent; quote every expansion (`"$path"`).
-4. **Preflight every source:** `[[ -e "$src" ]]` before `mv`/`rm`/`ln`. On miss → error + non-zero exit.
-5. **No no-op / loop links.** Forbidden: `mv "$x" "$(dirname "$x")"` when already there; circular `ln -s`.
-6. **Parent/child folders are not duplicates.** Do not “merge” a child into its parent as consolidation.
-7. **Peer folders only** for KEEP/DROP style reclaim: one KEEP + one DROP; `rm -rf --one-file-system` after confirm — not `mv DROP into KEEP`.
-8. One mutation block per script unless the human asks for a batch with an explicit list.
-9. Labeled plan above the fence: what changes, risk, dry-run default.
-10. No raw tool-call JSON / fake task footers in the answer.
+**Lane A — workspace edit** (`DECISION: apply`, named repo files):
+read+edit on real paths. Prefer **one file per turn**. No `sed -i` as the edit path.
 
-## Template
+**Lane B — host destructive** (rm/mv/rsync): dry-run default; mutate only with
+`CONFIRM=yes` in the environment. Print the plan first.
+
+## Rules
+1. `set -euo pipefail` on bash; never ignore failures silently.
+2. Prefer archive/move over `rm -rf` on important data.
+3. No secrets in scripts or skill text.
+4. After chmod/write: verify the path exists and is executable if claimed.
+
+## Template (Lane B)
 
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
-CONFIRM="${CONFIRM:-no}"
-KEEP="/path/from/evidence/A"
-DROP="/path/from/evidence/B"
-[[ -e "$KEEP" && -e "$DROP" ]] || { echo "preflight failed"; exit 1; }
-echo "KEEP=$KEEP"
-echo "DROP=$DROP"
-if [[ "$CONFIRM" != "yes" ]]; then
-  echo "dry-run only — re-run with CONFIRM=yes to delete DROP"
-  exit 0
-fi
-rm -rf --one-file-system -- "$DROP"
+DRY_RUN=1
+[[ "${CONFIRM:-}" == "yes" ]] && DRY_RUN=0
+plan() { echo "WOULD: $*"; }
+run() { if [[ "$DRY_RUN" -eq 1 ]]; then plan "$@"; else "$@"; fi; }
+# run rm -rf /path/to/target
 ```
 
 ## Never
-
-Invent paths; mutate without CONFIRM; nest DROP under KEEP; disable errexit “to keep going.”
+Blind `rm -rf`; mutate without CONFIRM on Lane B; paste secrets; invent paths.

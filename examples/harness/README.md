@@ -1,6 +1,7 @@
 # Minimal eval harness examples (keyword toy)
 
-Not a full weekly matrix — just enough to prove “fixed prompt → gate response.”
+Optional depth after smoke — not part of day-1 bootstrap. Not a full weekly
+matrix; just enough to prove “fixed prompt → gate response.”
 
 ```bash
 export LITELLM_BASE=http://127.0.0.1:4000

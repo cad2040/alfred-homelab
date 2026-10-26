@@ -1,41 +1,39 @@
 ---
 name: skill-gold-authoring
 description: >-
-  Author short Gold skills: hard rules + template in SKILL.md, dual size caps
-  for inject vs ingest, no placeholders or secrets, transferable applicability.
+  Author Tier-1 Gold skills: SKILL.md inject ≤4500 chars; optional reference;
+  wire routing/domains.yaml; no placeholders. Soft-park deferred work under skills/_soft/.
+source_repo: cad2040/alfred-homelab
+source_path: skills/skill-gold-authoring
 primary_domain: skill-gold-authoring
 domains: [skill-gold-authoring]
 routing_tags: ["#domain:skill-gold-authoring"]
-preferred_model: alfred-coder
+preferred_model: alfred-reasoner
 ---
 
 # Skill Gold authoring
 #domain: skill-gold-authoring
 
-## Dual size caps (example — tune for your stack)
-
-| Path | Cap (chars) | Counted |
-|------|-------------|---------|
-| Router **inject** | **4500** | `SKILL.md` only |
-| Vector **ingest** | **5500** | `SKILL.md` + optional `reference.md` |
-
-Exceeding either often **silently truncates**. Put the verified template in `SKILL.md`, not only in a long reference file the inject path never sees.
+## Caps
+| Path | Cap | Counted |
+|------|-----|---------|
+| LiteLLM inject | **4500** | `SKILL.md` only |
+| Optional Chroma ingest | **5500** | SKILL + reference (private upgrade) |
 
 ## Hard rules
-
-1. Lead with `#domain:` + imperative rules + a **copy-paste template** inside `SKILL.md`.
-2. No `TODO` / `TBD` / placeholder paths; no secrets or `.env` values.
-3. Register the domain in your router config in the same change as the skill.
-4. Promote from raw notes only after human confirm + real reuse — not vibes.
-5. Densify an existing skill before inventing a near-duplicate slug.
-6. **Transferable** skills: also tag an umbrella domain (`coding` / `software-planning`) and declare `applicability` cues (`apply_when`, `min_hits≥2`).
+1. Lead with `#domain:` + rules + **Verified template** inside `SKILL.md`.
+2. No `TODO` / `TBD` / placeholder text; no secrets.
+3. Same change: update `routing/domains.yaml` (+ restart LiteLLM / `scripts/sync-skills.sh`).
+4. Densify an existing skill before inventing a near-duplicate slug.
+5. **Soft / deferred** future projects: `skills/_soft/<slug>/` (not ingested). Promote = move to `skills/<slug>/`, densify with real notes, wire domains. Private labs may add rubric ≥15 gates.
 
 ## Checklist
-
 ```
-[ ] len(SKILL.md) ≤ inject cap — template complete
-[ ] len(SKILL+ref) ≤ ingest cap — measured before embed
-[ ] Router registry updated
+[ ] len(SKILL.md) ≤ 4500 — template complete
+[ ] domains.yaml updated
 [ ] No secrets
-[ ] Transferable? umbrella domain + applicability block
+[ ] Soft-park if the project is not active yet
 ```
+
+## Never
+Ship placeholders; duplicate near-identical skills; put deferred work in live Gold.

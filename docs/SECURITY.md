@@ -9,7 +9,7 @@ This is not a compliance handbook. It is the scar tissue from giving a small mod
 1. **Rails first, weights second.** Policy, binds, and HITL matter more than which 7B you pulled this week.
 2. **Fail closed.** If mounts, keys, or publishes are wrong, refuse — do not “helpfully” continue.
 3. **Gold is law; chat is not.** Injectable skills that mutate hosts require a human gate. Never auto-promote model drafts into production skills.
-4. **Localhost by default.** Teaching Compose in this repo publishes LiteLLM/Ollama on `127.0.0.1`, not the LAN.
+4. **Localhost by default.** Template Compose in this repo publishes LiteLLM/Ollama on `127.0.0.1`, not the LAN.
 
 ## The threat model
 

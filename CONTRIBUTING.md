@@ -1,28 +1,29 @@
 # Contributing
 
-Thanks for caring about local-LLM homelab rails.
+Thanks for caring about local-LLM lab rails.
 
 ## What belongs here
 
-- Sanitized patterns, guides, example Compose, and transferable Gold skills
-- Fixes to example deploy / docs clarity
-- New example skills that are **generic** (no private hostnames, family IoT, or secrets)
+- Sanitized deploy patterns, middleware twins, scripts, and **ops-core** Gold skills
+- Fixes to bootstrap/smoke/docs clarity
+- New skills that are **generic** (no private hostnames, family IoT, or secrets)
 
 ## What does not belong here
 
-- Private estate dumps (`domains.yaml` full of personal domains, digests, DR secrets)
+- Private estate dumps (full personal `domains.yaml`, digests, DR secrets)
 - Real API keys, master keys, SMTP credentials
-- Paths that identify a specific person’s lab without scrubbing
+- Estate IoT / exo / personal mount paths without scrubbing
+- Enabling SearXNG or judge paths that assume a private network
 
 ## Skill PRs
 
 1. Follow `skills/skill-gold-authoring/SKILL.md`.
-2. Include hard rules + template + never-list.
-3. Measure approximate size; keep cards short.
+2. Include hard rules + template + never-list; keep inject ≤4500 chars.
+3. Wire `routing/domains.yaml` in the same change.
 4. Prefer improving an existing card over near-duplicates.
+5. Soft-park deferred projects under `skills/_soft/` — do not ship as live Gold.
 
 ## Tone
 
-Honest about weaknesses (small weights, operator tax). No “replaces ChatGPT” claims. No community rankings (“top N%”) — describe tradeoffs, don’t score other labs.
-
-When documenting a pattern whose CLI/cron lives privately, say so in the first paragraph of the guide.
+Honest about weaknesses (small weights, operator tax). No “replaces ChatGPT”
+claims. This is a **co-pilot template**, not an autonomous agent kit.

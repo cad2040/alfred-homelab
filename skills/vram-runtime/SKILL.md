@@ -1,25 +1,44 @@
 ---
 name: vram-runtime
 description: >-
-  Single-GPU VRAM model: pin a small FIM/autocomplete in slot-1; hot-swap one
-  chat specialist in slot-2 (OLLAMA_MAX_LOADED_MODELS=2). No unload theatre.
+  GPU locks for local LLM labs: flock before batch jobs; keep_alive 5m interactive /
+  flush 0; single resident MAX_LOADED=1 + KV q8_0; FIM on-demand only (not pinned).
+source_repo: cad2040/alfred-homelab
+source_path: skills/vram-runtime
 primary_domain: vram-runtime
 domains: [vram-runtime]
 routing_tags: ["#domain:vram-runtime"]
 preferred_model: alfred-coder
 ---
 
-# VRAM runtime (12GB-class boxes)
+# VRAM / Ollama runtime
 #domain: vram-runtime
 
-## Hard rules
+## Rules
+1. Before long batch LLM jobs: `flock -w 600 /var/lock/alfred-vram.lock` (or your lab lock path).
+2. Interactive specialists: `keep_alive` **5m**; flush with **`keep_alive: 0`**. Do **not** pin FIM with `keep_alive: -1`.
+3. **One resident** at a time (`OLLAMA_MAX_LOADED_MODELS=1`) — swap coder / reasoner / planner by selecting the alias.
+4. FIM (`qwen2.5-coder:1.5b-base`) is autocomplete / Bronze **fallback only**.
+5. Optional gates: `MemAvailable` (not raw `free -m`); free VRAM before loading a heavy tag.
+6. Prefer `OLLAMA_NUM_PARALLEL=1`, `OLLAMA_FLASH_ATTENTION=1`, `OLLAMA_KV_CACHE_TYPE=q8_0` on 12GB-class GPUs.
+7. Ollama listen `127.0.0.1` — clients go through LiteLLM.
 
-1. **FIM / autocomplete stays pinned** in slot-1 (`keep_alive: -1` or equivalent). Do not unload it to “make room” for the planner.
-2. **One specialist** (coder / reasoner / planner / security) occupies **slot-2** and hot-swaps peers.
-3. Set **`OLLAMA_MAX_LOADED_MODELS=2`** (pin + one specialist). Claiming “three 7Bs fit” is how autocomplete dies.
-4. Clients should select the **alias** they need; do not invent flush hashtags that unload the pin.
-5. Keep a flush list of specialist backend tags for orderly unload between roles.
+## Template
+
+```bash
+exec 9>/var/lock/alfred-vram.lock
+flock -w 600 9 || { echo "VRAM lock timeout"; exit 1; }
+curl -s http://127.0.0.1:11434/api/generate \
+  -d '{"model":"qwen2.5-coder:7b-instruct","keep_alive":0}' >/dev/null
+```
+
+```bash
+# Compose / systemd env (honest 12GB posture)
+OLLAMA_MAX_LOADED_MODELS=1
+OLLAMA_NUM_PARALLEL=1
+OLLAMA_FLASH_ATTENTION=1
+OLLAMA_KV_CACHE_TYPE=q8_0
+```
 
 ## Never
-
-Unload the FIM pin for a specialist; assume three large instruct models coexist; treat slot-2 eviction as “amnesia” without explaining hot-swap.
+Permanent FIM pin; two chat specialists resident; `MAX_LOADED_MODELS>1` on 12GB without measuring; LLM batch jobs without a shared flock.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Simple keyword gate for teaching harness packs."""
+"""Simple keyword gate for optional-depth harness packs."""
 from __future__ import annotations
 
 import argparse

@@ -1,75 +1,52 @@
-# Wire LiteLLM middleware (teaching extract)
+# Wire middleware (template twins)
 
-This repo ships **sanitized** callbacks under [`reference/litellm/`](../../reference/litellm/):
+Compose mounts [`middleware/`](../../middleware/) into the LiteLLM container as
+`/app/config/*.py` with `PYTHONPATH=/app/config`.
 
-| Module | Role |
-|--------|------|
-| `alfred_routing_skills.py` | `#domain:` / phrase → inject `SKILL.md` |
-| `alfred_middleware_bronze.py` | Bronze rolling compress + optional Chroma |
-| `custom_prompt.py` | Optional persona prepend |
-
-They are intentionally smaller than a full private-estate fork (no unsupervised lanes, no SearXNG, no estate paths).
-
-## Compose (already wired in the example)
-
-`deploy/compose/docker-compose.yml` bind-mounts the three modules into `/app/config/` and sets:
-
-```text
-PYTHONPATH=/app/config
-ALFRED_SKILLS_ROOT=/app/skills
-ALFRED_DOMAINS_YAML=/app/config/domains.yaml
-ALFRED_BRONZE_BUDGETS=/app/config/bronze_budgets.yaml
-```
-
-`config.yaml` registers:
+## Callbacks (`config.yaml`)
 
 ```yaml
 litellm_settings:
   callbacks:
-    - alfred_routing_skills.proxy_handler_instance
-    - alfred_middleware_bronze.proxy_handler_instance
+    - alfred_routing_callback.proxy_handler_instance
+    - alfred_middleware.proxy_handler_instance
     - custom_prompt.prompt_management
 ```
 
-Recreate LiteLLM after edits:
+Order: **route/inject → Bronze → optional persona**.
 
-```bash
-cd deploy/compose && docker compose up -d --force-recreate litellm
-```
-
-## Manual install into an existing LiteLLM
-
-1. Copy the three `.py` files next to your `config.yaml` (must be on `PYTHONPATH`).
-2. Copy or bind your Gold `skills/` tree; set `ALFRED_SKILLS_ROOT`.
-3. Add `bronze_budgets.yaml` + optional `domains.yaml`.
-4. Append the three callback entries; recreate the container.
-5. Smoke: chat with `#domain:docker-ufw` and a long thread (Bronze).
-
-## Order of hooks
-
-LiteLLM runs callbacks in list order. Recommended:
-
-1. **Routing / skill inject** — policy before compress
-2. **Bronze** — may drop middle turns
-3. **Persona** — last (or skip on planner/security)
-
-## Environment knobs
+## Important env
 
 | Env | Default | Meaning |
 |-----|---------|---------|
-| `ALFRED_MAX_SKILL_CHARS` | `4500` | Inject budget for SKILL.md bodies |
-| `ALFRED_BRONZE_CTX_RATIO` | `0.61` | threshold ≈ ratio × num_ctx |
-| `ALFRED_FIM_TAG` | `qwen2.5-coder:1.5b-base` | `/api/generate` summarizer |
-| `CHROMA_URL` | empty | If set, best-effort Bronze upsert (no prune) |
-| `OLLAMA_HOST` | `http://ollama:11434` | Direct Ollama (no LiteLLM re-entry) |
-| `ALFRED_PERSONA` | butler line | Empty string disables persona prepend |
-| `ALFRED_PERSONA_SKIP` | planner,security | Alias substrings that skip persona |
+| `ALFRED_SKILLS_ROOT` | `/app/skills` | Gold skill dirs |
+| `ALFRED_DOMAINS_YAML` | `/app/config/domains.yaml` | Thin registry |
+| `ALFRED_MAX_SKILL_CHARS` | `4500` | Hard inject budget |
+| `ALFRED_SKILL_CARDS_CHARS` | `3000` | Soft card catalog |
+| `ALFRED_WEBSEARCH` | `0` | SearXNG off in template |
+| `ALFRED_SKILL_JUDGE` | `0` | No LLM applicability judge |
+| `ALFRED_PERSONA` | empty | Persona off |
+| `ALFRED_CODER_TAG` / `_REASONER_TAG` / `_FIM_TAG` | see `.env.example` | Bronze self-summarize targets |
 
-## Hardening notes
+## Soft vs hard inject
 
-- Never commit real master keys.
-- Callbacks call Ollama **directly** for summarize/embed — avoid re-entering LiteLLM hooks.
-- If FIM tag is missing, Bronze falls back to extractive stubs (still protects num_ctx).
-- Optional Chroma upsert is **capture only** — purge/Silver/Gold staging is a separate private job ([memory-tiers-curation.md](memory-tiers-curation.md)).
-- Re-smoke after LiteLLM image bumps; `CustomLogger` / prompt-management registration has drifted across versions.
-- Private labs often add: websearch inject, applicability scoring, deny-tool lists, twin `*-fc` aliases — port those carefully; don’t paste estate secrets into a public fork.
+- **Hard** (full `SKILL.md`): phrase triggers (e.g. `Coach this Prompt:`) or explicit non-umbrella `#domain:`.
+- **Soft** (keyword / fallback): short skill **cards**; model may `#load_skill <id>`.
+
+## After edits
+
+```bash
+./scripts/sync-skills.sh
+./scripts/smoke.sh
+```
+
+## Re-verify on LiteLLM upgrades
+
+Callback import paths drift. If logs show import errors, check volume mounts and
+`PYTHONPATH`. Pin the Compose image tag you smoke-tested.
+
+## Private upgrades
+
+SearXNG, magic-context tools, stack-monitor `#lane:preflight`, and applicability
+judge live in private estates — not this template. See
+[PRIVATE_VS_TEMPLATE.md](../PRIVATE_VS_TEMPLATE.md).

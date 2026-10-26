@@ -1,15 +1,15 @@
-"""Teaching Bronze middleware for LiteLLM (sanitized public extract).
+"""Alfred LiteLLM Bronze middleware (sanitized template twin).
 
 Compresses long chats before specialist ``num_ctx`` overflow:
 
-1. Read per-alias budgets from ``bronze_budgets.yaml`` (else derive ≈0.61×num_ctx)
-2. If tokens (messages + tools) exceed threshold → summarize the middle
-3. Prefer a small base FIM tag via Ollama ``/api/generate`` (never ``/api/chat`` on base)
-4. Optional Chroma upsert is best-effort and never blocks the chat
-5. On summarize failure → extractive stub so the request still fits
+1. Read per-alias budgets from ``bronze_budgets.yaml`` (else ≈0.61×num_ctx)
+2. Prefer **self-summarize** on the resident chat alias (MAX_LOADED=1 honest)
+3. FIM ``/api/generate`` fallback only (never pin with keep_alive -1)
+4. Optional Chroma upsert when ``CHROMA_URL`` set (never blocks chat)
+5. On failure → extractive stub so the request still fits
 
-Wire-up: see ``docs/guides/wire-middleware.md``.
-Register as ``alfred_middleware_bronze.proxy_handler_instance`` in config.yaml.
+No ``/mnt/alfred`` hard paths — config via env / ``/app/config`` only.
+Register as ``alfred_middleware.proxy_handler_instance``.
 """
 from __future__ import annotations
 
@@ -27,10 +27,10 @@ try:
 except Exception:  # noqa: BLE001
     from litellm.proxy.hooks.callback import CustomLogger  # type: ignore
 
-log = logging.getLogger("alfred.middleware.bronze")
+log = logging.getLogger("alfred.middleware")
 
 OLLAMA = os.environ.get("OLLAMA_HOST", "http://ollama:11434").rstrip("/")
-CHROMA = os.environ.get("CHROMA_URL", "").rstrip("/")  # empty = skip ingest
+CHROMA = os.environ.get("CHROMA_URL", "").rstrip("/")
 FIM_TAG = os.environ.get("ALFRED_FIM_TAG", "qwen2.5-coder:1.5b-base")
 FIM_ALIAS = "alfred-fim"
 EMBED_MODEL = os.environ.get("ALFRED_EMBED_TAG", "nomic-embed-text")
@@ -38,7 +38,7 @@ BRONZE_COLLECTION = "bronze_context_log"
 PRESERVE_TAIL = int(os.environ.get("ALFRED_BRONZE_PRESERVE_TAIL", "3"))
 BRONZE_CTX_RATIO = float(os.environ.get("ALFRED_BRONZE_CTX_RATIO", "0.61"))
 TOKEN_THRESHOLD_DEFAULT = int(os.environ.get("ALFRED_BRONZE_TOKEN_THRESHOLD", "20000"))
-SPECIALIST_NUM_CTX_DEFAULT = int(os.environ.get("ALFRED_SPECIALIST_NUM_CTX", "32768"))
+SPECIALIST_NUM_CTX_DEFAULT = int(os.environ.get("ALFRED_SPECIALIST_NUM_CTX", "16384"))
 
 _BRONZE_BUDGET_PATHS = (
     Path(os.environ.get("ALFRED_BRONZE_BUDGETS", "/app/config/bronze_budgets.yaml")),
@@ -47,6 +47,10 @@ _LITELLM_CONFIG_PATHS = (
     Path(os.environ.get("ALFRED_LITELLM_CONFIG", "/app/config/config.yaml")),
 )
 _budget_cache: dict[str, Any] = {"mtime": None, "map": {}}
+
+_LEGACY_VRAM_TAG_RE = re.compile(
+    r"(?m)^\s*#(?:DeepSeek|AlfredPlanner|flushDeepSeek|flushAlfredPlanner)\b[^\n]*\n?"
+)
 
 _SUMMARIZE_INSTRUCTION = (
     "Summarize the following project context into technical bullet points. "
@@ -59,6 +63,16 @@ _FIM_SUMMARY_PROMPT = (
     "Rules: use only facts present below; never invent paths/domains.\n\n"
     "### Transcript\n{transcript}\n\n### Summary\n"
 )
+
+# Ollama tag for self-summarize when request model is an Alfred alias.
+_ALIAS_OLLAMA_TAG = {
+    "alfred-coder": os.environ.get("ALFRED_CODER_TAG", "qwen2.5-coder:7b-instruct"),
+    "alfred-reasoner": os.environ.get("ALFRED_REASONER_TAG", "qwen2.5:7b-instruct"),
+    "alfred-technical-planner": os.environ.get(
+        "ALFRED_PLANNER_TAG", "qwen2.5:7b-instruct"
+    ),
+    "alfred-security": os.environ.get("ALFRED_SECURITY_TAG", "qwen2.5:7b-instruct"),
+}
 
 
 def _normalize_model(model: str) -> str:
@@ -154,6 +168,37 @@ def _msg_text(msg: dict[str, Any]) -> str:
     return str(content)
 
 
+def _set_latest_user_text(messages: list[dict[str, Any]], new_text: str) -> None:
+    for msg in reversed(messages or []):
+        if msg.get("role") != "user":
+            continue
+        content = msg.get("content")
+        if isinstance(content, list):
+            replaced = False
+            for p in content:
+                if isinstance(p, dict) and p.get("type") == "text":
+                    p["text"] = new_text
+                    replaced = True
+                    break
+            if not replaced:
+                msg["content"] = [{"type": "text", "text": new_text}]
+        else:
+            msg["content"] = new_text
+        return
+
+
+def _strip_legacy_vram_tags(messages: list[dict[str, Any]]) -> None:
+    text = ""
+    for msg in reversed(messages or []):
+        if msg.get("role") == "user":
+            text = _msg_text(msg)
+            break
+    if not text or not _LEGACY_VRAM_TAG_RE.search(text):
+        return
+    cleaned = _LEGACY_VRAM_TAG_RE.sub("", text)
+    _set_latest_user_text(messages, cleaned)
+
+
 def _count_tokens(model: str, messages: list[dict[str, Any]]) -> int:
     try:
         import litellm
@@ -224,12 +269,36 @@ def _summary_looks_usable(summary: str, *, extractive: bool = False) -> bool:
     return not any(b in text.lower() for b in bad)
 
 
+async def _summarize_chat(client: Any, ollama_tag: str, middle_text: str, num_ctx: int) -> str:
+    payload = {
+        "model": ollama_tag,
+        "messages": [
+            {"role": "system", "content": _SUMMARIZE_INSTRUCTION},
+            {"role": "user", "content": middle_text},
+        ],
+        "stream": False,
+        "keep_alive": "2m",
+        "options": {
+            "num_ctx": min(num_ctx, 16384),
+            "temperature": 0.2,
+            "num_predict": 800,
+        },
+    }
+    resp = await client.post(f"{OLLAMA}/api/chat", json=payload, timeout=180.0)
+    resp.raise_for_status()
+    msg = ((resp.json() or {}).get("message") or {})
+    content = (msg.get("content") or "").strip()
+    if not content or not _summary_looks_usable(content):
+        raise RuntimeError("unusable self summary")
+    return content
+
+
 async def _summarize_fim(client: Any, middle_text: str) -> str:
     payload = {
         "model": FIM_TAG,
         "prompt": _FIM_SUMMARY_PROMPT.format(transcript=middle_text),
         "stream": False,
-        "keep_alive": -1,
+        "keep_alive": "2m",  # never -1 in template (MAX_LOADED=1)
         "options": {"num_ctx": 8192, "temperature": 0.2, "num_predict": 512},
     }
     resp = await client.post(f"{OLLAMA}/api/generate", json=payload, timeout=120.0)
@@ -277,19 +346,13 @@ async def _ingest_bronze_optional(summary: str) -> None:
                 coll_id = (created.json() or {}).get("id")
             if not coll_id:
                 return
-            # Chroma rejects nulls — use "" / False / 0. Teaching metadata only;
-            # private labs often add dual keys (collection_tier) + richer fields.
             meta = {
                 "tier": "bronze",
                 "collection_tier": "bronze",
                 "note_kind": "rolling-summary",
-                "repo_tag": "",
                 "created_at": ts,
-                "last_accessed_at": ts,
                 "is_pinned": False,
                 "promotion_score": 0,
-                "superseded_by": "",
-                "review_status": "",
             }
             await client.post(
                 f"{CHROMA}/collections/{coll_id}/upsert",
@@ -321,19 +384,33 @@ async def _maybe_bronze_compress(
     if split is None:
         return messages, None
     systems, middle, tail = split
+    middle_text = _middle_as_plaintext(middle, 12_000)
+    bare = _normalize_model(request_model)
     summary: str | None = None
-    try:
-        summary = await _summarize_fim(
-            client, _middle_as_plaintext(middle, 10_000)
-        )
-    except Exception as exc:  # noqa: BLE001
-        log.warning("FIM summarize failed (%s) — extractive", exc)
-        summary = _extractive_summary(middle)
-        if not _summary_looks_usable(summary, extractive=True):
-            summary = (
-                f"(auto) Prior {len(middle)} message(s) dropped to protect "
-                f"num_ctx={specialist_ctx}."
+
+    # 1) self-summarize when we know an Ollama tag for the alias
+    ollama_tag = _ALIAS_OLLAMA_TAG.get(bare)
+    if ollama_tag:
+        try:
+            summary = await _summarize_chat(
+                client, ollama_tag, middle_text, specialist_ctx
             )
+        except Exception as exc:  # noqa: BLE001
+            log.warning("self-summarize failed (%s) — try FIM", exc)
+
+    # 2) FIM fallback
+    if summary is None:
+        try:
+            summary = await _summarize_fim(client, middle_text)
+        except Exception as exc:  # noqa: BLE001
+            log.warning("FIM summarize failed (%s) — extractive", exc)
+            summary = _extractive_summary(middle)
+            if not _summary_looks_usable(summary, extractive=True):
+                summary = (
+                    f"(auto) Prior {len(middle)} message(s) dropped to protect "
+                    f"num_ctx={specialist_ctx}."
+                )
+
     bronze_msg = {
         "role": "system",
         "content": f"[Bronze rolling summary]\n{summary}",
@@ -341,7 +418,7 @@ async def _maybe_bronze_compress(
     return [*systems, bronze_msg, *tail], summary
 
 
-class AlfredBronzeMiddleware(CustomLogger):
+class AlfredMiddleware(CustomLogger):
     async def async_pre_call_hook(
         self,
         user_api_key_dict: Any,
@@ -354,6 +431,7 @@ class AlfredBronzeMiddleware(CustomLogger):
         messages = list(data.get("messages") or [])
         if not messages:
             return data
+        _strip_legacy_vram_tags(messages)
         model = str(data.get("model") or "")
         tools = data.get("tools")
         try:
@@ -368,12 +446,10 @@ class AlfredBronzeMiddleware(CustomLogger):
                 )
             data["messages"] = new_msgs
             if summary:
-                # Await so the task is not dropped when the hook returns.
-                # Failures are swallowed inside _ingest_bronze_optional.
                 await _ingest_bronze_optional(summary)
         except Exception as exc:  # noqa: BLE001
             log.warning("bronze compress unexpected: %s", exc)
         return data
 
 
-proxy_handler_instance = AlfredBronzeMiddleware()
+proxy_handler_instance = AlfredMiddleware()

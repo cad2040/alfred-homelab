@@ -4,7 +4,7 @@ How a rails-heavy lab keeps **Chroma useful** instead of becoming a junk drawer:
 
 This is separate from **Bronze rolling chat compress** ([bronze-budgets.md](bronze-budgets.md)) — that protects `num_ctx`. This guide is about **long-term memory + Gold skills**.
 
-**Scope of this repo:** the **gates, rubric checklist, and `route_score` demo**. The nightly promote-and-prune job, Mem0 Silver store, and staged Gold apply path live in a **private** lab. Optional Bronze→Chroma upsert from teaching middleware is best-effort only — it does not prune.
+**Scope of this repo:** the **gates, rubric checklist, and `route_score` demo**. The nightly promote-and-prune job, Mem0 Silver store, and staged Gold apply path are **private upgrades**. Optional Bronze→Chroma upsert from template middleware (`CHROMA_URL`) is best-effort only — it does not prune.
 
 ## Tier map
 
