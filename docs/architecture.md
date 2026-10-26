@@ -17,6 +17,44 @@ Hands-on path: [LEARNING_PATH.md](LEARNING_PATH.md). Middleware wire-up: [guides
 
 This public repo teaches a **subset** of those rails (skill inject, Bronze compress, keyword harness, Sentinel skeleton, curation gates). Full private labs often add more — see the honesty table below.
 
+## Request flow & memory tiers
+
+```mermaid
+flowchart TB
+  U["User / IDE client<br/>(Continue, Open WebUI, curl)"]
+
+  subgraph GATE["LiteLLM gateway :4000 — localhost only"]
+    MW["Middleware callbacks<br/>routing · skill inject · Bronze compress"]
+  end
+
+  subgraph MEM["Memory tiers"]
+    B["Bronze<br/>raw chat / short-term<br/>ephemeral + compress logs"]
+    S["Silver<br/>sticky notes / entities<br/>auto-promote, gated"]
+    G["Gold skills<br/>git skills/&lt;slug&gt;<br/>hard rules — human only"]
+  end
+
+  subgraph CRON["Nightly Sentinel cron"]
+    N["Evaluate Bronze<br/>purge · silver_pin · gold_stage"]
+  end
+
+  OLL["Ollama<br/>local weights<br/>FIM pin + 1 specialist"]
+
+  U -->|"chat /v1"| MW
+  MW -->|"read / write short-term"| B
+  MW -->|"inject pinned #domain: cards"| G
+  MW -->|"contextualized prompt"| OLL
+  OLL -->|"completion"| MW
+  MW -->|"response"| U
+
+  B -->|"nightly curation"| N
+  N -->|"auto, gated"| S
+  N -->|"draft only — HITL"| G
+```
+
+A request never goes “straight to the model.” It enters **LiteLLM middleware**, which (1) may compress or log **Bronze** short-term context when the transcript approaches specialist `num_ctx`, and (2) injects matching **Gold** skill cards (domain law from git, not vibes). The enriched prompt is what Ollama sees. Separately, a **nightly Sentinel** job curates Bronze: most of it is purged, some becomes **Silver** sticky memory under hard gates, and only **human-approved** drafts become Gold. Rails shape the 12GB box; weights fill the remaining slot.
+
+Security posture (localhost binds, master key, HITL mutators): [SECURITY.md](SECURITY.md). Tier details: [guides/memory-tiers-curation.md](guides/memory-tiers-curation.md).
+
 ---
 
 ## What ships here vs private-lab extras

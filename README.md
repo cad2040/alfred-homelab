@@ -9,8 +9,9 @@ It is a **teaching subset**, not a drop-in clone of any live lab. Pattern guides
 ## Start here
 
 1. **[docs/LEARNING_PATH.md](docs/LEARNING_PATH.md)** — ordered journey (gateway → skills → Bronze → VRAM → challenge/wire → harness → Sentinel → memory tiers)
-2. **[docs/architecture.md](docs/architecture.md)** — tradeoffs + what ships vs private extras
-3. **[deploy/HUMAN.md](deploy/HUMAN.md)** / **[deploy/agent/AGENTS.md](deploy/agent/AGENTS.md)** — bring-up
+2. **[docs/architecture.md](docs/architecture.md)** — tradeoffs, request-flow diagram, what ships vs private extras
+3. **[docs/SECURITY.md](docs/SECURITY.md)** — threat model, HITL mutators, localhost / master-key defaults
+4. **[deploy/HUMAN.md](deploy/HUMAN.md)** / **[deploy/agent/AGENTS.md](deploy/agent/AGENTS.md)** — bring-up
 
 ## Quick start
 
@@ -40,7 +41,8 @@ Smoke steps: [deploy/HUMAN.md](deploy/HUMAN.md). Compose was written against Lit
 | Area | Location | Honesty |
 |------|----------|---------|
 | Learning path | `docs/LEARNING_PATH.md` | |
-| Architecture | `docs/architecture.md` | Tradeoffs; no community rankings |
+| Architecture | `docs/architecture.md` | Tradeoffs + Mermaid request flow; no community rankings |
+| Security | `docs/SECURITY.md` | Threat model, HITL, fail-closed binds |
 | Wire middleware | `docs/guides/wire-middleware.md` + `reference/litellm/` | Skill inject + Bronze + optional persona |
 | Bronze budgets | `docs/guides/bronze-budgets.md` | |
 | Model challenge / wire / drop | `docs/guides/model-challenge-wire-drop.md` | **Pattern only** — CLIs private |
