@@ -8,7 +8,7 @@ Compresses long chats before specialist ``num_ctx`` overflow:
 4. Optional Chroma upsert when ``CHROMA_URL`` set (never blocks chat)
 5. On failure → extractive stub so the request still fits
 
-No ``/mnt/alfred`` hard paths — config via env / ``/app/config`` only.
+No host-absolute lab paths — config via env / ``/app/config`` only.
 Register as ``alfred_middleware.proxy_handler_instance``.
 """
 from __future__ import annotations
@@ -66,12 +66,16 @@ _FIM_SUMMARY_PROMPT = (
 
 # Ollama tag for self-summarize when request model is an Alfred alias.
 _ALIAS_OLLAMA_TAG = {
-    "alfred-coder": os.environ.get("ALFRED_CODER_TAG", "qwen2.5-coder:7b-instruct"),
-    "alfred-reasoner": os.environ.get("ALFRED_REASONER_TAG", "qwen2.5:7b-instruct"),
-    "alfred-technical-planner": os.environ.get(
-        "ALFRED_PLANNER_TAG", "qwen2.5:7b-instruct"
+    "alfred-coder": os.environ.get("ALFRED_CODER_TAG", "alfred-coder-14b"),
+    "alfred-reasoner": os.environ.get("ALFRED_REASONER_TAG", "alfred-reasoner"),
+    "alfred-reasoner-fc": os.environ.get("ALFRED_REASONER_TAG", "alfred-reasoner"),
+    "alfred-technical-planner": os.environ.get("ALFRED_PLANNER_TAG", "alfred-planner"),
+    "alfred-technical-planner-fc": os.environ.get(
+        "ALFRED_PLANNER_TAG", "alfred-planner"
     ),
-    "alfred-security": os.environ.get("ALFRED_SECURITY_TAG", "qwen2.5:7b-instruct"),
+    "alfred-security": os.environ.get(
+        "ALFRED_SECURITY_TAG", "alfred-foundation-sec"
+    ),
 }
 
 

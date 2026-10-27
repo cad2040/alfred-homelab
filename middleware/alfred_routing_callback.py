@@ -1,8 +1,8 @@
 """LiteLLM pre-call routing (sanitized Alfred template twin).
 
 Phrase / ``#domain:`` / keywords → preferred model + Gold skill inject.
-Live-shaped after the private estate callback — **without** SearXNG, estate
-paths, stack-monitor, or applicability judge (off by default).
+Teaching twin for this public template — **without** websearch backends,
+host-absolute paths, stack-monitor, or applicability judge (off by default).
 
 Env:
   ALFRED_SKILLS_ROOT       default /app/skills
@@ -57,6 +57,11 @@ _LOAD_SKILL_RE = re.compile(
 UMBRELLA_DOMAIN_IDS = frozenset({"coding", "software-planning"})
 _LEGACY_MODEL_ALIASES = {
     "alfred_technical_planner": "alfred-technical-planner",
+}
+# ollama/* dumps tool JSON as chat content; openai/* twins stream native tool_calls.
+_TOOLS_FC_ALIASES = {
+    "alfred-reasoner": "alfred-reasoner-fc",
+    "alfred-technical-planner": "alfred-technical-planner-fc",
 }
 _registry_cache: dict[str, Any] = {"mtime": None, "data": {}}
 
@@ -376,6 +381,21 @@ class AlfredRoutingCallback(CustomLogger):
         data["messages"] = _inject_skills(
             messages, skills, hard=hard, match_reason=reason
         )
+
+        # Strip tools on FIM; rewrite reasoner/planner to openai/* FC twins when tools present.
+        req_now = str(data.get("model") or "").rsplit("/", 1)[-1]
+        if req_now in {"alfred-fim", "qwen2.5-coder:1.5b-base"}:
+            if data.get("tools") or data.get("tool_choice") or data.get("functions"):
+                data.pop("tools", None)
+                data.pop("tool_choice", None)
+                data.pop("functions", None)
+                log.info("alfred tools stripped for FIM model=%s", req_now)
+        elif data.get("tools") or data.get("functions"):
+            fc = _TOOLS_FC_ALIASES.get(req_now)
+            if fc:
+                data["model"] = fc
+                log.info("alfred tools route %s → %s", req_now, fc)
+
         data["_alfred_route"] = {
             "reason": reason,
             "skills": skills,
@@ -384,7 +404,7 @@ class AlfredRoutingCallback(CustomLogger):
             "websearch": WEBSEARCH_ENABLED,
         }
         if WEBSEARCH_ENABLED:
-            log.debug("websearch enabled but template has no SearXNG — no-op")
+            log.debug("websearch enabled but no backend in template — no-op")
         return data
 
 

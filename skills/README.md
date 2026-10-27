@@ -11,5 +11,6 @@ Thin, sanitized cards for an Alfred-like lab. Adapt CIDRs and paths to your host
 | [bronze-context](bronze-context/) | Rolling summarize before ctx overflow |
 | [skill-gold-authoring](skill-gold-authoring/) | Writing new Gold cards |
 
-**Not included:** estate IoT, digests/msmtp, Sentinel, soft-parked printer/voice,
-disk-usage with private mount paths. See [docs/PRIVATE_VS_TEMPLATE.md](../docs/PRIVATE_VS_TEMPLATE.md).
+**Not included:** personal IoT, digest mailers, nightly Sentinel, lab-specific
+deferred cards, or skills that hardcode host mount paths. See
+[docs/PRIVATE_VS_TEMPLATE.md](../docs/PRIVATE_VS_TEMPLATE.md).

@@ -17,7 +17,7 @@ flock (VRAM / mutual exclusion)
   → security specialist pass (optional)
   → reasoner pass (stability / domain-tag suggestions)
   → write morning digest (markdown)
-  → best-effort mail (msmtp etc. — private)
+  → best-effort mail (local MTA — private)
   → backup stages (private)
   → optional: schedule weekly eval matrix
 ```

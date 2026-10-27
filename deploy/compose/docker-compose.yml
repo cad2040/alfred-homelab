@@ -44,9 +44,10 @@ services:
       ALFRED_LITELLM_CONFIG: /app/config/config.yaml
       ALFRED_WEBSEARCH: "0"
       ALFRED_SKILL_JUDGE: "0"
-      ALFRED_CODER_TAG: ${ALFRED_CODER_TAG:-qwen2.5-coder:7b-instruct}
-      ALFRED_REASONER_TAG: ${ALFRED_REASONER_TAG:-qwen2.5:7b-instruct}
-      ALFRED_PLANNER_TAG: ${ALFRED_PLANNER_TAG:-qwen2.5:7b-instruct}
+      ALFRED_CODER_TAG: ${ALFRED_CODER_TAG:-alfred-coder-14b}
+      ALFRED_REASONER_TAG: ${ALFRED_REASONER_TAG:-alfred-reasoner}
+      ALFRED_PLANNER_TAG: ${ALFRED_PLANNER_TAG:-alfred-planner}
+      ALFRED_SECURITY_TAG: ${ALFRED_SECURITY_TAG:-alfred-foundation-sec}
       ALFRED_FIM_TAG: ${ALFRED_FIM_TAG:-qwen2.5-coder:1.5b-base}
       # Persona off unless set:
       ALFRED_PERSONA: ${ALFRED_PERSONA:-}

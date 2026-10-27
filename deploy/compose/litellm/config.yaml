@@ -1,11 +1,32 @@
-# Alfred deploy template — LiteLLM aliases + sanitized twins.
-# Pull matching Ollama tags via scripts/bootstrap.sh before use.
+# Alfred deploy template — LiteLLM aliases for a reference 12GB-class lab.
+# Bootstrap pulls base weights + creates Modelfiles under deploy/modelfiles/.
 # Clients: http://127.0.0.1:4000/v1  Authorization: Bearer $LITELLM_MASTER_KEY
+#
+# Public aliases: alfred-fim | alfred-coder | alfred-reasoner | alfred-security |
+#   alfred-technical-planner
+# Internal *-fc twins: openai/* when tools[] present (ollama/* dumps tool JSON as content).
+# Single resident: OLLAMA_MAX_LOADED_MODELS=1; FIM not permanently pinned.
 
 model_list:
+  - model_name: alfred-fim
+    litellm_params:
+      # Bronze /api/generate fallback — not permanently pinned; never accept tools
+      model: openai/qwen2.5-coder:1.5b-base
+      api_base: http://ollama:11434/v1
+      api_key: ollama
+      timeout: 60
+      additional_drop_params: ["tools", "tool_choice", "functions"]
+      extra_body:
+        options:
+          num_ctx: 8192
+    model_info:
+      supports_function_calling: false
+      max_input_tokens: 8192
+
   - model_name: alfred-coder
     litellm_params:
-      model: openai/qwen2.5-coder:7b-instruct
+      # qwen2.5-coder 14B Q3 via alfred-coder-14b Modelfile (PARAMETER num_ctx 16384)
+      model: openai/alfred-coder-14b
       api_base: http://ollama:11434/v1
       api_key: ollama
       timeout: 300
@@ -18,7 +39,40 @@ model_list:
 
   - model_name: alfred-reasoner
     litellm_params:
-      model: openai/qwen2.5:7b-instruct
+      # Chat path: ollama/* + think:false (OpenAI-compat cannot disable qwen3.5 CoT).
+      # Tools rewrite to alfred-reasoner-fc (openai/*) for native streaming tool_calls.
+      model: ollama/alfred-reasoner
+      api_base: http://ollama:11434
+      api_key: ollama
+      timeout: 300
+      extra_body:
+        think: false
+        options:
+          num_ctx: 32768
+          temperature: 0.3
+    model_info:
+      supports_function_calling: true
+      max_input_tokens: 32768
+
+  - model_name: alfred-reasoner-fc
+    litellm_params:
+      model: openai/alfred-reasoner
+      api_base: http://ollama:11434/v1
+      api_key: ollama
+      timeout: 300
+      extra_body:
+        options:
+          num_ctx: 32768
+          temperature: 0.3
+    model_info:
+      supports_function_calling: true
+      max_input_tokens: 32768
+      hidden: true
+
+  - model_name: alfred-security
+    litellm_params:
+      # Foundation-Sec-8B-Instruct Q4 via alfred-foundation-sec Modelfile
+      model: openai/alfred-foundation-sec
       api_base: http://ollama:11434/v1
       api_key: ollama
       timeout: 300
@@ -31,31 +85,34 @@ model_list:
 
   - model_name: alfred-technical-planner
     litellm_params:
-      model: openai/qwen2.5:7b-instruct
+      # Spec Kit planner: alfred-planner Modelfile @32k
+      model: ollama/alfred-planner
+      api_base: http://ollama:11434
+      api_key: ollama
+      timeout: 300
+      extra_body:
+        think: false
+        options:
+          num_ctx: 32768
+          temperature: 0.2
+    model_info:
+      supports_function_calling: true
+      max_input_tokens: 32768
+
+  - model_name: alfred-technical-planner-fc
+    litellm_params:
+      model: openai/alfred-planner
       api_base: http://ollama:11434/v1
       api_key: ollama
       timeout: 300
       extra_body:
         options:
-          num_ctx: 16384
+          num_ctx: 32768
+          temperature: 0.2
     model_info:
       supports_function_calling: true
-      max_input_tokens: 16384
-
-  # Optional FIM — pull qwen2.5-coder:1.5b-base for Bronze /api/generate fallback.
-  - model_name: alfred-fim
-    litellm_params:
-      model: openai/qwen2.5-coder:1.5b-base
-      api_base: http://ollama:11434/v1
-      api_key: ollama
-      timeout: 60
-      additional_drop_params: ["tools", "tool_choice", "functions"]
-      extra_body:
-        options:
-          num_ctx: 8192
-    model_info:
-      supports_function_calling: false
-      max_input_tokens: 8192
+      max_input_tokens: 32768
+      hidden: true
 
 litellm_settings:
   drop_params: true

@@ -4,9 +4,18 @@ alfred-coder:
   num_ctx: 16384
   compress_threshold: 9994
 alfred-reasoner:
-  num_ctx: 16384
-  compress_threshold: 9994
+  num_ctx: 32768
+  compress_threshold: 19988
+alfred-reasoner-fc:
+  num_ctx: 32768
+  compress_threshold: 19988
 alfred-technical-planner:
+  num_ctx: 32768
+  compress_threshold: 19988
+alfred-technical-planner-fc:
+  num_ctx: 32768
+  compress_threshold: 19988
+alfred-security:
   num_ctx: 16384
   compress_threshold: 9994
 alfred-fim:

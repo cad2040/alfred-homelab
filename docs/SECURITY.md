@@ -19,11 +19,13 @@ A local LLM with tools is not a chatbot. It is a **privileged co-operator** that
 |------------|-----------------|
 | Shell / script generation | Plausible `rm`, firewall, or `chmod` that destroys mounts or opens the box |
 | File write / Apply | Overwrites configs, `.env`, or skill cards with confident nonsense |
-| Path hallucination | Rewrites `/mnt/SDD1/media` → `/mnt/media`, “fixes” UUIDs, invents KEEP/DROP peers |
+| Path hallucination | Rewrites `/mnt/data/media` → `/mnt/media`, “fixes” UUIDs, invents KEEP/DROP peers |
 | Tool loops | Repeated host probes, VRAM thrash, or accidental publish of services |
 | Prompt injection via retrieved text | Bronze notes, web snippets, or pasted logs that say “ignore previous rules” |
 
-You are defending against **mistakes and over-trust**, not primarily against nation-state attackers on your sofa. The failure mode is: *Sir clicks Apply because the fence looked tidy.*
+You are defending against **mistakes and over-trust**, not primarily against
+nation-state attackers on a home LAN. The usual failure mode is accepting a
+tidy-looking Apply that still mutates the wrong host path or firewall rule.
 
 Assume:
 

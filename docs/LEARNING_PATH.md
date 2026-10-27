@@ -31,6 +31,7 @@ Use `Coach this Prompt:` before heavy Agent turns.
 ## 5. VRAM honesty
 
 [`vram-runtime`](../skills/vram-runtime/SKILL.md) — MAX_LOADED=1, no permanent FIM pin.
+Alias map (14B coder / 9B reasoner+planner / Foundation-Sec): [architecture.md](architecture.md).
 
 ## 6. Challenge → wire → drop (pattern only)
 

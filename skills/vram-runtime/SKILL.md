@@ -29,11 +29,11 @@ preferred_model: alfred-coder
 exec 9>/var/lock/alfred-vram.lock
 flock -w 600 9 || { echo "VRAM lock timeout"; exit 1; }
 curl -s http://127.0.0.1:11434/api/generate \
-  -d '{"model":"qwen2.5-coder:7b-instruct","keep_alive":0}' >/dev/null
+  -d '{"model":"alfred-coder-14b","keep_alive":0}' >/dev/null
 ```
 
 ```bash
-# Compose / systemd env (honest 12GB posture)
+# Compose / systemd env (honest 12GB-class posture)
 OLLAMA_MAX_LOADED_MODELS=1
 OLLAMA_NUM_PARALLEL=1
 OLLAMA_FLASH_ATTENTION=1
@@ -41,4 +41,5 @@ OLLAMA_KV_CACHE_TYPE=q8_0
 ```
 
 ## Never
-Permanent FIM pin; two chat specialists resident; `MAX_LOADED_MODELS>1` on 12GB without measuring; LLM batch jobs without a shared flock.
+Permanent FIM pin; two chat specialists resident; `MAX_LOADED_MODELS>1` on
+12GB-class GPUs without measuring; LLM batch jobs without a shared flock.

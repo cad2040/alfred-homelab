@@ -1,21 +1,22 @@
-# Private estate vs this template
+# Private lab vs this template
 
-| Capability | This template | Typical private Alfred |
-|------------|---------------|------------------------|
+| Capability | This template | Typical private Alfred-like lab |
+|------------|---------------|----------------------------------|
 | Ollama + LiteLLM localhost | Yes | Yes |
-| Skill inject (`#domain:` / phrases) | Yes (ops-core) | Large personal registry |
-| Coach this Prompt | Yes | Yes (core) |
-| Bronze compress | Yes (self → FIM) | Yes + Chroma tenants |
-| MAX_LOADED=1 / KV q8_0 | Yes | Yes |
-| SearXNG / `#websearch` | Off (`ALFRED_WEBSEARCH=0`) | Often on alfred-net |
+| Skill inject (`#domain:` / phrases) | Yes (ops-core) | Larger personal registry |
+| Coach this Prompt | Yes | Often core |
+| Bronze compress | Yes (self → FIM) | Yes + optional vector DB tenants |
+| MAX_LOADED=1 / KV q8_0 | Yes | Common on 12GB-class GPUs |
+| Local websearch proxy | Off (`ALFRED_WEBSEARCH=0`) | Optional on a private Docker network |
 | Applicability judge | Off | Optional LLM judge |
-| Soft skills (`skills/_soft/`) | Documented pattern | Printer / voice / pools |
+| Soft / deferred skills | Documented pattern | Lab-specific deferred cards |
 | Spec Kit HITL loop | Docs only | Planner + one-task coder |
-| Sentinel / msmtp digests | Skeleton under `examples/` | Live cron + mail |
-| SoT sync | `scripts/sync-skills.sh` (restart) | git push → `alfred-sync-skills` |
-| Estate IoT / exo / mounts | No | Yes |
-| DR / Stage backups | No | Yes |
+| Nightly digests / mail | Skeleton under `examples/` | Live cron + mailer |
+| SoT sync | `scripts/sync-skills.sh` (restart) | Private git → ingest/reload helper |
+| Personal IoT / host mounts | No | Yes |
+| Disaster recovery / backups | No | Yes |
 
-**Honesty:** this repo trails a live private lab on purpose. Copy rails, not
-secrets. When private middleware twins change, re-export a **sanitized** subset
-into `middleware/` — never auto-publish `.env`, LAN CIDRs, or personal skills.
+**Honesty:** this repo trails any live private lab on purpose. Copy rails, not
+secrets. When you maintain private middleware twins, re-export a **sanitized**
+subset into `middleware/` — never auto-publish `.env`, real LAN CIDRs, or
+personal skills.

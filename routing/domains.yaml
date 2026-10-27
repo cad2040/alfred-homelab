@@ -64,7 +64,7 @@ domains:
     keywords:
       - keep_alive
       - MAX_LOADED
-      - alfred-vram
+      - vram flock
       - nvidia-smi
       - OLLAMA_NUM_PARALLEL
 

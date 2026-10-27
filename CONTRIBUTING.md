@@ -12,8 +12,8 @@ Thanks for caring about local-LLM lab rails.
 
 - Private estate dumps (full personal `domains.yaml`, digests, DR secrets)
 - Real API keys, master keys, SMTP credentials
-- Estate IoT / exo / personal mount paths without scrubbing
-- Enabling SearXNG or judge paths that assume a private network
+- Personal IoT stacks or host mount paths without scrubbing
+- Enabling websearch proxies or judge paths that assume a private network
 
 ## Skill PRs
 
@@ -23,7 +23,14 @@ Thanks for caring about local-LLM lab rails.
 4. Prefer improving an existing card over near-duplicates.
 5. Soft-park deferred projects under `skills/_soft/` — do not ship as live Gold.
 
+## Scrub checklist (before any PR)
+
+- [ ] No real LAN CIDRs, hostnames, or `/mnt/...` paths from a private lab  
+- [ ] No master keys, SMTP creds, or `.env` contents  
+- [ ] No personal IoT / family device skills or domain ids  
+- [ ] Docs say “reference / template,” not “my live box”  
+
 ## Tone
 
-Honest about weaknesses (small weights, operator tax). No “replaces ChatGPT”
+Honest about weaknesses (local weights, operator tax). No “replaces ChatGPT”
 claims. This is a **co-pilot template**, not an autonomous agent kit.

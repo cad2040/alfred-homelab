@@ -47,6 +47,6 @@ Callback import paths drift. If logs show import errors, check volume mounts and
 
 ## Private upgrades
 
-SearXNG, magic-context tools, stack-monitor `#lane:preflight`, and applicability
-judge live in private estates — not this template. See
+Local websearch proxies, extra host tools, and applicability judges live in
+private labs — not this template. See
 [PRIVATE_VS_TEMPLATE.md](../PRIVATE_VS_TEMPLATE.md).

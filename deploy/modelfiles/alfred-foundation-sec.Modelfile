@@ -1,0 +1,24 @@
+# Cisco Foundation-Sec-8B-Instruct Q4_K_M (mradermacher GGUF) for security review.
+# Do NOT use fdtn-ai/Foundation-Sec-8B-Q4_K_M-GGUF (base) — it echoes ChatML/user text.
+FROM hf.co/mradermacher/Foundation-Sec-8B-Instruct-GGUF:Q4_K_M
+
+TEMPLATE """{{- range $i, $_ := .Messages }}
+{{- $last := eq (len (slice $.Messages $i)) 1 -}}
+<|{{ .Role }}|>
+{{ .Content }}{{ if not $last }}
+{{ end }}
+{{- if and (ne .Role "assistant") $last }}<|assistant|>
+{{ end }}
+{{- end }}"""
+
+SYSTEM """You are a cybersecurity specialist (Foundation-Sec-Instruct / Metis). Focus on exposure, auth, network posture, CVE/CWE accuracy, and concrete risks. Be direct and concise. Prefer stating no concrete risks over inventing issues. Refuse non-security tasks politely."""
+
+PARAMETER temperature 0.3
+PARAMETER top_p 0.95
+PARAMETER stop "<|user|>"
+PARAMETER stop "<|assistant|>"
+PARAMETER stop "<|system|>"
+PARAMETER stop "<|end_of_text|>"
+PARAMETER stop "<|eot_id|>"
+PARAMETER stop "<|im_start|>"
+PARAMETER stop "<|im_end|>"

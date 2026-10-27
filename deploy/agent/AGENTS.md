@@ -6,7 +6,8 @@ paste paths.
 
 ## Goals
 
-1. Run `./scripts/bootstrap.sh` then `./scripts/smoke.sh`.
+1. Run `./scripts/bootstrap.sh`, set `LITELLM_MASTER_KEY`, then `./scripts/smoke.sh`
+   (`curl` required; GPU recommended — `ALFRED_CPU=1` is bring-up only).
 2. Verify skill inject (`#domain:docker-ufw` → DOCKER-USER) and Coach phrase.
 3. Point clients at `alfred-coder` / `alfred-reasoner` aliases on `127.0.0.1:4000`.
 4. Treat Alfred as a **HITL co-pilot** — never an unsupervised implementer.
@@ -32,11 +33,11 @@ paste paths.
 
 ## Out of scope (refuse or defer)
 
-- Publishing their private estate repo
-- Baby-monitor / personal IoT stacks
+- Publishing anyone’s private lab repo or secrets
+- Personal / family IoT device stacks
 - Blind `iptables -F` or disabling UFW
 - Claiming judge scores authorize auto-rewire
-- Adding SearXNG / Sentinel / DR as if they ship here
+- Adding search proxies, digests, or DR as if they ship here
 
 ## Success criteria
 

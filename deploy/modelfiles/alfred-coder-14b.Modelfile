@@ -1,0 +1,4 @@
+# Alfred coder — qwen2.5-coder 14B Q3 @16k.
+# OpenAI /v1 ignores options.num_ctx; this wrapper Modelfile is required for 16k.
+FROM qwen2.5-coder:14b-instruct-q3_K_M
+PARAMETER num_ctx 16384
