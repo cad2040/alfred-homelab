@@ -139,4 +139,7 @@ Gold **git** cards remain SoT; Chroma Gold is a search/inject cache — re-inges
 4. Human writes/merges `skills/<slug>/` → ingest Gold.
 5. Add TTL prune once volume hurts.
 
-Teaching hooks here: Sentinel skeleton ([nightly-sentinel.md](nightly-sentinel.md)) + rubric ([../../examples/curation/RUBRIC_CHECKLIST.md](../../examples/curation/RUBRIC_CHECKLIST.md)). Do not expect a full prune cron in this tree.
+Teaching hooks here: Sentinel ([nightly-sentinel.md](nightly-sentinel.md),
+`SENTINEL_ENABLE_MEMORY=1`) + rubric
+([../../examples/curation/RUBRIC_CHECKLIST.md](../../examples/curation/RUBRIC_CHECKLIST.md)).
+Memory stage defaults off until Chroma + domains exist.

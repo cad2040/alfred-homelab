@@ -1,6 +1,8 @@
-# Example — install only after editing paths and env.
-# Run when the lab is idle; hold a flock (skeleton does). Respect MAX_LOADED=1.
+# Nightly Sentinel — adjust paths to your install and private env file.
+# Hold VRAM flock; prefer idle hours. Do not overlap heavy GPU jobs.
 
-# 0 2 * * *  DIGEST_DIR=/var/lib/alfred/digests/morning LITELLM_MASTER_KEY=… \
-#   /usr/bin/python3 /opt/alfred-homelab/examples/sentinel/sentinel_skeleton.py \
-#   >> /var/log/alfred-sentinel.log 2>&1
+SHELL=/bin/bash
+PATH=/usr/local/bin:/usr/bin:/bin
+
+# Example: 02:15 local — load private env then run
+# 15 2 * * *  set -a; source /path/to/private/sentinel.env; set +a; /path/to/alfred-homelab/examples/sentinel/run-sentinel.sh >> /path/to/alfred-data/sentinel.cron.log 2>&1

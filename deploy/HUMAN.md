@@ -20,13 +20,16 @@
 3. Point Continue / Open WebUI at `http://127.0.0.1:4000/v1` with the master key.
 4. Prefer aliases: `alfred-coder`, `alfred-reasoner`, `alfred-technical-planner`,
    `alfred-security` (see [docs/architecture.md](../docs/architecture.md)).
-5. Try `#domain:docker-ufw` and `Coach this Prompt:` (smoke already covers both).
+5. In Continue, set **per-model `contextLength`** to match Modelfiles (coder **16k**,
+   reasoner/planner **32k**) — see [docs/guides/continue-alfred.md](../docs/guides/continue-alfred.md).
+6. Try `#domain:docker-ufw` and `Coach this Prompt:` (smoke already covers both).
 
 ## Co-pilot (not an agent)
 
 - Alfred **drafts**; you **review and debug**.
 - Spec Kit / plans: human edits until true; hand **one task** to coder.
 - Never treat digests or skill inject as auto-authority.
+- Smooth Continue + Spec Kit (prompts, Windows shell, compaction): [docs/guides/continue-alfred.md](../docs/guides/continue-alfred.md).
 
 ## After skill edits
 

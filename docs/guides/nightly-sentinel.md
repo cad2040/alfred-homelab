@@ -1,65 +1,75 @@
 # Nightly Sentinel (HITL ops agent)
 
-Sentinel, in a full private lab, is a **scheduled, flock-guarded pipeline** that
-observes the host, asks specialists for commentary, writes a morning digest, and
-optionally kicks backups / eval hooks. It is **not** allowed to silently rewrite
-production config or push git.
+Sentinel is a **scheduled, flock-guarded pipeline** that observes the host, asks
+specialists for commentary, writes a morning digest, and optionally kicks mail /
+backup / eval hooks. It is **not** allowed to silently rewrite production config
+or push git.
 
-**Scope of this repo:** digest **skeleton** only (`examples/sentinel/`).
-Telemetry, mail, backups, and memory prune are **private upgrades** — not part
-of the deploy template.
+**In this repo:** a sanitized, runnable package under
+[`examples/sentinel/`](../../examples/sentinel/) — same stages as a private lab
+build, with **env-driven paths** and **no private mounts, LAN maps, or secrets**.
 
-## Pipeline (reference stages)
+## Pipeline
 
 ```text
 flock (VRAM / mutual exclusion)
-  → collect telemetry / findings
-  → security specialist pass (optional)
-  → reasoner pass (stability / domain-tag suggestions)
+  → collect telemetry / findings (SQLite under ALFRED_DATA_ROOT)
+  → security specialist pass (optional; needs LiteLLM key)
+  → reasoner pass (stability)
+  → optional memory Stage 4 (off by default)
   → write morning digest (markdown)
-  → best-effort mail (local MTA — private)
-  → backup stages (private)
-  → optional: schedule weekly eval matrix
+  → optional mail / backup / eval hooks (your wrappers)
 ```
 
-Hard rules from real ops:
+Hard rules:
 
-1. **Do not fight MAX_LOADED=1** — wait for the flock; do not invent unload/load
-   theatre or permanent FIM pins to “make room.”
+1. **Do not fight MAX_LOADED=1** — wait for the flock.
 2. **Never git push** from Sentinel.
 3. Digests and staged promotions are **proposals** — humans apply.
 4. Hold a **VRAM flock** so chat and nightly jobs do not thrash the single resident.
-5. Time it for idle hours (e.g. `0 2 * * *`).
+5. Time it for idle hours (e.g. `15 2 * * *`).
 
-## What to put in a digest
+## Setup
 
-- Disk / container / GPU snapshots you already trust
-- Security findings phrased as checklists
-- “Consider wiring model X” — never auto-pull
-- Links to staged files under a promotions directory
+Full instructions: [`examples/sentinel/SETUP.md`](../../examples/sentinel/SETUP.md).
 
-## Skeleton in this repo
+```bash
+cd examples/sentinel
+cp .env.example /path/to/private/sentinel.env   # fill secrets offline
+export ALFRED_ENV_FILE=/path/to/private/sentinel.env
+./run-sentinel.sh
+```
 
-[`examples/sentinel/sentinel_skeleton.py`](../../examples/sentinel/sentinel_skeleton.py)
-demonstrates:
+Cron: [`examples/sentinel/crontab.example`](../../examples/sentinel/crontab.example).
 
-- env-based config (no hardcoded estate paths)
-- flock
-- LiteLLM chat call to `alfred-reasoner`
-- writing `DIGEST_DIR/YYYY-MM-DD.md`
-- no git push / no auto-apply
+## What lands in a digest
 
-Cron example: [`examples/sentinel/crontab.example`](../../examples/sentinel/crontab.example).
+- Disk / container / GPU / RAM snapshots
+- ICMP network health (fail-closed) + optional controller API snapshot
+- Deterministic **Controller NHS** (0–100) from collected API facts when enabled
+- Stability pass: host brief + grounded network assessment (inventory, anomalies,
+  capacity, ICMP-adjusted NHS) — no invented `/stat/*` metrics
+- Security findings as checklists
+- “Consider model X” on the 1st — never auto-pull
+- Optional coached prompt blocks for Open WebUI / Cline
 
-## Growing toward a full Sentinel
+## Feature flags
 
-Port privately, one stage at a time:
+Defaults are safe / off for anything that needs private infra:
 
-1. Telemetry DB / `docker ps` / `ollama ps`
-2. Security alias with a strict system prompt
-3. Domain-tag suggestions against your registry
-4. Memory rubric → purge Bronze noise / pin Silver / stage Gold drafts (human merge) — see [memory-tiers-curation.md](memory-tiers-curation.md)
-5. Backup scripts you already trust
-6. Hook to weekly eval after flock release
+| Flag | Default | Notes |
+|------|---------|--------|
+| `SENTINEL_ENABLE_CONTROLLER_API` | `0` | Controller API snapshot + Controller NHS |
+| `SENTINEL_ENABLE_MEMORY` | `0` | Chroma Bronze/Gold Stage 4 |
+| `SENTINEL_ENABLE_EVAL_HOOKS` | `0` | Mon/Sun optional CLI |
+| `SENTINEL_MAIL_CMD` / `SENTINEL_BACKUP_CMD` | unset | Your private wrappers |
 
-Keep SMTP credentials and host UUIDs in private env — never in a public tree.
+## Growing further
+
+1. Point `SENTINEL_DISK_MOUNTS` and ICMP targets at **your** lab (private env only).
+2. Wire mail + backup wrappers you already trust.
+3. Enable memory only after Chroma + domains registry exist.
+4. Densify rubric / domain-tag modules privately if the stubs are too thin.
+
+Keep SMTP credentials, API keys, host UUIDs, and personal directory trees out of
+git — see [PRIVATE_VS_TEMPLATE.md](../PRIVATE_VS_TEMPLATE.md).

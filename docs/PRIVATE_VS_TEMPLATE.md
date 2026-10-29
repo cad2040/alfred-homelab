@@ -11,7 +11,8 @@
 | Applicability judge | Off | Optional LLM judge |
 | Soft / deferred skills | Documented pattern | Lab-specific deferred cards |
 | Spec Kit HITL loop | Docs only | Planner + one-task coder |
-| Nightly digests / mail | Skeleton under `examples/` | Live cron + mailer |
+| Nightly digests / mail | Sanitized package under `examples/sentinel/` (env-driven; ICMP + optional controller NHS; secrets off-repo) | Live cron + private mailer / mounts |
+| Host-tools modularity | Documented thin-launcher + `lib/` pattern in Sentinel SETUP | Larger private packages (eval weekly, model ops, …) |
 | SoT sync | `scripts/sync-skills.sh` (restart) | Private git → ingest/reload helper |
 | Personal IoT / host mounts | No | Yes |
 | Disaster recovery / backups | No | Yes |

@@ -15,6 +15,9 @@ Accept: small local models need **policy and measurement**. You are not installi
 
 Prefer LiteLLM aliases in Continue/Open WebUI. Keep publishes on localhost.
 
+Then wire Continue properly: [guides/continue-alfred.md](guides/continue-alfred.md)
+(`contextLength` per alias, Spec Kit `/speckit.*` prompts, compaction pitfalls).
+
 ## 2. Fail-closed publishes
 
 Read [`docker-ufw`](../skills/docker-ufw/SKILL.md). Replace `YOUR_LAN_CIDR` before applying iptables.
@@ -41,9 +44,10 @@ Alias map (14B coder / 9B reasoner+planner / Foundation-Sec): [architecture.md](
 
 [guides/eval-harness.md](guides/eval-harness.md) + `examples/harness/`.
 
-## 8. Nightly Sentinel (skeleton)
+## 8. Nightly Sentinel
 
-[guides/nightly-sentinel.md](guides/nightly-sentinel.md) + `examples/sentinel/`.
+[guides/nightly-sentinel.md](guides/nightly-sentinel.md) +
+[`examples/sentinel/SETUP.md`](../examples/sentinel/SETUP.md).
 
 ## 9. Memory tiers / prune (gates)
 

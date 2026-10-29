@@ -63,9 +63,9 @@ which (1) may compress **Bronze** short-term context when the transcript
 approaches specialist `num_ctx`, and (2) injects matching **Gold** skill cards.
 The enriched prompt is what Ollama sees.
 
-**Nightly Sentinel → Silver** is a **private upgrade** (skeleton under
-`examples/sentinel/`). Dashed edges in the diagram are not started by this
-Compose stack. **Gold stays human-only.**
+**Nightly Sentinel → Silver** is available as a sanitized package under
+`examples/sentinel/` (memory stage off by default; enable with env). Dashed
+edges in the diagram are not started by Compose alone. **Gold stays human-only.**
 
 Tier details: [guides/memory-tiers-curation.md](guides/memory-tiers-curation.md).
 

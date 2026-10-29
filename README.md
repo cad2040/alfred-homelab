@@ -20,6 +20,10 @@ cd alfred-homelab
 
 Clients: `http://127.0.0.1:4000/v1` with `Authorization: Bearer $LITELLM_MASTER_KEY`.
 
+**Continue:** set per-model `contextLength` (coder 16k / reasoner+planner 32k) and
+prefer Spec Kit prompts under `.continue/prompts/` — see
+[docs/guides/continue-alfred.md](docs/guides/continue-alfred.md).
+
 CPU-only: `ALFRED_CPU=1 ./scripts/bootstrap.sh` — bring-up only; 14B/9B on CPU
 is painfully slow. Prefer GPU for real use.
 
@@ -60,10 +64,12 @@ real `LITELLM_MASTER_KEY` before `./scripts/smoke.sh`.
 
 ## Private upgrades (not in this repo)
 
-Deferred personal skills, Spec Kit HITL full loop, nightly digests, local
-websearch, applicability judge, vector Gold ingest, IoT cards, DR/backups.
-Optional depth (harness / Sentinel skeleton / challenge pattern) lives under
-`docs/guides/` + `examples/`. See [docs/PRIVATE_VS_TEMPLATE.md](docs/PRIVATE_VS_TEMPLATE.md).
+Deferred personal skills, Spec Kit HITL full loop, local websearch,
+applicability judge, dense private skill registries, IoT cards, DR/backups.
+Sanitized nightly Sentinel (telemetry + digest; secrets via private env) lives
+under [`examples/sentinel/`](examples/sentinel/) — see
+[docs/guides/nightly-sentinel.md](docs/guides/nightly-sentinel.md) and
+[docs/PRIVATE_VS_TEMPLATE.md](docs/PRIVATE_VS_TEMPLATE.md).
 
 ## License
 

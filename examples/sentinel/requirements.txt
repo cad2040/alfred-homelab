@@ -1,0 +1,3 @@
+# Sentinel public template — stdlib-first; these are optional helpers.
+PyYAML>=6.0          # domain registry load when SENTINEL_ENABLE_MEMORY=1
+# chromadb is NOT required — Sentinel talks to Chroma over HTTP when enabled.

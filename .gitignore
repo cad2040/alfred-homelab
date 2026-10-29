@@ -10,5 +10,8 @@ __pycache__/
 deploy/compose/.env
 examples/harness/runs/
 examples/sentinel/digests/
+examples/sentinel/alfred-data/
+examples/sentinel/.venv/
 **/digests/
+**/alfred-data/
 *.log
