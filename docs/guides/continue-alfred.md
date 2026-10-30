@@ -74,6 +74,8 @@ Planner drafts Spec Kit markdown with edit tools; human reviews; coder implement
 
 **Windows path trap (red-X “does not exist”):** `read_file` accepts `C:\Code\…` absolutes; `edit_existing_file` / `create_new_file` / `single_find_and_replace` often fail with “does not exist” on those same paths. Always pass **workspace-relative** paths with forward slashes (`specs/011-…/tasks.md`). Check Continue → Models → **Apply** is Gemini Flash.
 
+**Empty turn after Select-String:** alfred-coder sometimes returns **zero tool_calls + empty content** after a successful search, which ends the Agent loop with the checkbox still `[ ]`. Estate `/speckit.implement` forbids that; coder `baseAgentSystemMessage` requires another tool_call until `- [X]` mark. If it still stalls, nudge once with “emit work + single_find_and_replace mark tool_calls now” — do not trust compaction summaries.
+
 ## Spec Kit in Continue (not Cline)
 
 Cline-style installs tend to bloat context. Prefer Spec Kit’s **`generic`** integration writing into the project’s Continue prompts.
